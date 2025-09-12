@@ -10,6 +10,14 @@ namespace E_Commerce.application.Repository
 {
     public interface IUserRepository : IGenericRepository<User,int>
     {
+        public Task<User?> GetUserByEmailAsync(string email);
+        public Task<User?> GetUserByUsernameAsync(string username);
+        public bool SignIn(User user, string password);
+
+        bool IsValidEmail(string email);
+        public bool IsValidPassword(string password);
+        public string Hash(string password);
+
 
     }
 }

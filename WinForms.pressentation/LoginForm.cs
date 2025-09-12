@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Commerce_project.models.User;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,8 +17,7 @@ namespace WinForms.pressentation
         {
             InitializeComponent();
         }
-
-        private void btnBack_Click(object sender, EventArgs e)
+private void btnBack_Click(object sender, EventArgs e)
         {
             Form1 form = new Form1();
             this.Hide();
@@ -40,7 +40,7 @@ namespace WinForms.pressentation
                 this.Hide();
                 homeform.Show();
             }
-                
+               
         }
     }
 }
