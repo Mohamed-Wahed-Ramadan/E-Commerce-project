@@ -16,5 +16,21 @@ namespace WinForms.pressentation
         {
             InitializeComponent();
         }
+
+        private void btnCart_Click(object sender, EventArgs e)
+        {
+            CartForm cartForm = new CartForm();
+            this.Hide();
+            cartForm.Show();
+        }
+
+        private void btnOrder_Click(object sender, EventArgs e)
+        {
+            OrderForm orderForm = new OrderForm();
+            this.Hide();
+            orderForm.Show();
+        }
+
+        
     }
 }
