@@ -31,7 +31,6 @@
             txtName = new TextBox();
             txtPassword = new TextBox();
             txtEmail = new TextBox();
-            chkIsAdmin = new CheckBox();
             button1 = new Button();
             label1 = new Label();
             label2 = new Label();
@@ -51,6 +50,7 @@
             // 
             txtPassword.Location = new Point(122, 217);
             txtPassword.Name = "txtPassword";
+            txtPassword.PasswordChar = '*';
             txtPassword.Size = new Size(309, 23);
             txtPassword.TabIndex = 1;
             // 
@@ -61,24 +61,15 @@
             txtEmail.Size = new Size(309, 23);
             txtEmail.TabIndex = 2;
             // 
-            // chkIsAdmin
-            // 
-            chkIsAdmin.AutoSize = true;
-            chkIsAdmin.Location = new Point(122, 281);
-            chkIsAdmin.Name = "chkIsAdmin";
-            chkIsAdmin.Size = new Size(62, 19);
-            chkIsAdmin.TabIndex = 3;
-            chkIsAdmin.Text = "Admin";
-            chkIsAdmin.UseVisualStyleBackColor = true;
-            // 
             // button1
             // 
-            button1.Location = new Point(285, 321);
+            button1.Location = new Point(285, 310);
             button1.Name = "button1";
             button1.Size = new Size(146, 41);
             button1.TabIndex = 4;
             button1.Text = "Sign In";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // label1
             // 
@@ -112,9 +103,9 @@
             label4.AutoSize = true;
             label4.Location = new Point(200, 25);
             label4.Name = "label4";
-            label4.Size = new Size(72, 15);
+            label4.Size = new Size(78, 15);
             label4.TabIndex = 8;
-            label4.Text = "Sign In Bage";
+            label4.Text = "Register Bage";
             label4.Click += label4_Click;
             // 
             // btnBack
@@ -125,6 +116,7 @@
             btnBack.TabIndex = 9;
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += btnBack_Click;
             // 
             // SignInForm
             // 
@@ -138,7 +130,6 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(button1);
-            Controls.Add(chkIsAdmin);
             Controls.Add(txtEmail);
             Controls.Add(txtPassword);
             Controls.Add(txtName);
@@ -153,7 +144,6 @@
         private TextBox txtName;
         private TextBox txtPassword;
         private TextBox txtEmail;
-        private CheckBox chkIsAdmin;
         private Button button1;
         private Label label1;
         private Label label2;

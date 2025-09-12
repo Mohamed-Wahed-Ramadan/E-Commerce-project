@@ -60,6 +60,7 @@
             btnDone.TabIndex = 3;
             btnDone.Text = "Login";
             btnDone.UseVisualStyleBackColor = true;
+            btnDone.Click += btnDone_Click;
             // 
             // label1
             // 
@@ -96,6 +97,7 @@
             btnBack.TabIndex = 7;
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
+            btnBack.Click += btnBack_Click;
             // 
             // LoginForm
             // 

@@ -10,30 +10,18 @@ using System.Windows.Forms;
 
 namespace WinForms.pressentation
 {
-    public partial class SignInForm : Form
+    public partial class OrderForm : Form
     {
-        public SignInForm()
+        public OrderForm()
         {
             InitializeComponent();
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnBack_Click(object sender, EventArgs e)
         {
-            Form1 form = new Form1();
+            HomeForm homeForm = new HomeForm();
             this.Hide();
-            form.Show();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            LoginForm loginForm = new LoginForm();
-            this.Hide();
-            loginForm.Show();
+            homeForm.Show();
         }
     }
 }
