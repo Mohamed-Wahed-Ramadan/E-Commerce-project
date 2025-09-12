@@ -8,5 +8,9 @@ namespace E_Commerce_project.models
 {
     public class cart : BaseModel<int>
     {
+        public int orderNumber {  get; set; }
+        public user User { get; set; }
+        public List<CartProduct> CartProducts { get; set; }
+        public decimal OrderTotalPrice { get; set; }
     }
 }

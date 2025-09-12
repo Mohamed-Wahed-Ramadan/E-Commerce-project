@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Commerce_project.models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,11 @@ namespace E_Commerce.application.Repository
 {
     public interface IOrderRepository
     {
+        public List<order> GetAllOrders();
+        public void AddOrder(cart cart, int orderId);
+
+        public void DeletOrder(order order);
+        public void Save();
+
     }
 }
