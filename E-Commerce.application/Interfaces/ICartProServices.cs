@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce_project.models
+namespace E_Commerce.application.Interfaces
 {
-    public class product : BaseModel<int>
+    public interface ICartProServices
     {
-        public decimal Price {  get; set; }
     }
 }
