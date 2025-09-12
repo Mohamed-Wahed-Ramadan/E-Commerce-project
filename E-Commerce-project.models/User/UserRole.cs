@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce_project.models
+namespace E_Commerce_project.models.User
 {
-    public class user : BaseModel<int>
+    public enum UserRole
     {
+        Admin,
+        Customer
     }
 }
