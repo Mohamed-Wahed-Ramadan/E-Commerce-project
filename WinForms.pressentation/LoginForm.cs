@@ -17,25 +17,30 @@ namespace WinForms.pressentation
         {
             InitializeComponent();
         }
+private void btnBack_Click(object sender, EventArgs e)
+        {
+            Form1 form = new Form1();
+            this.Hide();
+            form.Show();
+        }
 
         private void btnDone_Click(object sender, EventArgs e)
         {
-            // Take information
-            // check database if user exists
-            // if exists => 
-            var user = new User();
-            if(user.Role == UserRole.Admin)
+            if(txtEmail.Text == "admin" && txtPassword.Text == "admin")
             {
-                //redirect to Admin Form
+                AdminForm adminform = new AdminForm();
+                this.Hide();
+                adminform.Show();
             }
             else
             {
-                //redirect to Home or cart 
+                //add order
+                //delete cart info
+                HomeForm homeform = new HomeForm();
+                this.Hide();
+                homeform.Show();
             }
-
-            // check Role 
-            // if admin => redirect to admin form 
-            // if customer => redirect to cart or home 
+               
         }
     }
 }
