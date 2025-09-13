@@ -1,5 +1,5 @@
 ﻿using E_Commerce.application.Repository;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace E_commerce.infratructure
             _context = context;
         }
 
-        public List<cart> GetAllCarts()
+        public List<Cart> GetAllCarts()
         {
             return _context.carts.ToList();
         }
@@ -35,11 +35,11 @@ namespace E_commerce.infratructure
             }
 
         }
-        public void AddCart(cart cart)
+        public void AddCart(Cart cart)
         {
             _context.carts.Add(cart);
         }
-        public void DelectCart(cart cart)
+        public void DelectCart(Cart cart)
         {
             _context.carts.Remove(cart);
         }

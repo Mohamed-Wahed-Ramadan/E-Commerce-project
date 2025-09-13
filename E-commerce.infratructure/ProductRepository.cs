@@ -1,6 +1,6 @@
 ﻿using E_Commerce.application.Repository;
 using E_Commerce.application.Services;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;

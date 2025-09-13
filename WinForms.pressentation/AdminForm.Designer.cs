@@ -42,60 +42,67 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(381, 23);
+            label1.Location = new Point(435, 31);
             label1.Name = "label1";
-            label1.Size = new Size(72, 15);
+            label1.Size = new Size(91, 20);
             label1.TabIndex = 0;
             label1.Text = "Admin Bage";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(11, 56);
+            label2.Location = new Point(13, 75);
             label2.Name = "label2";
-            label2.Size = new Size(63, 15);
+            label2.Size = new Size(80, 20);
             label2.TabIndex = 1;
             label2.Text = "Categories";
             // 
             // dataGridViewCat
             // 
             dataGridViewCat.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCat.Location = new Point(6, 74);
+            dataGridViewCat.Location = new Point(7, 99);
+            dataGridViewCat.Margin = new Padding(3, 4, 3, 4);
             dataGridViewCat.Name = "dataGridViewCat";
-            dataGridViewCat.Size = new Size(782, 113);
+            dataGridViewCat.RowHeadersWidth = 51;
+            dataGridViewCat.Size = new Size(894, 151);
             dataGridViewCat.TabIndex = 2;
+            dataGridViewCat.CellContentClick += dataGridViewCat_CellContentClick;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(15, 219);
+            label3.Location = new Point(17, 292);
             label3.Name = "label3";
-            label3.Size = new Size(54, 15);
+            label3.Size = new Size(66, 20);
             label3.TabIndex = 3;
             label3.Text = "Products";
             // 
             // dataGridViewPro
             // 
             dataGridViewPro.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewPro.Location = new Point(6, 235);
+            dataGridViewPro.Location = new Point(7, 313);
+            dataGridViewPro.Margin = new Padding(3, 4, 3, 4);
             dataGridViewPro.Name = "dataGridViewPro";
-            dataGridViewPro.Size = new Size(782, 159);
+            dataGridViewPro.RowHeadersWidth = 51;
+            dataGridViewPro.Size = new Size(894, 212);
             dataGridViewPro.TabIndex = 4;
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(685, 406);
+            btnSave.Location = new Point(783, 541);
+            btnSave.Margin = new Padding(3, 4, 3, 4);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(103, 32);
+            btnSave.Size = new Size(118, 43);
             btnSave.TabIndex = 5;
             btnSave.Text = "Save";
             btnSave.UseVisualStyleBackColor = true;
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(12, 406);
+            btnBack.Location = new Point(14, 541);
+            btnBack.Margin = new Padding(3, 4, 3, 4);
             btnBack.Name = "btnBack";
-            btnBack.Size = new Size(103, 32);
+            btnBack.Size = new Size(118, 43);
             btnBack.TabIndex = 6;
             btnBack.Text = "Back";
             btnBack.UseVisualStyleBackColor = true;
@@ -103,10 +110,10 @@
             // 
             // AdminForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveBorder;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(914, 600);
             Controls.Add(btnBack);
             Controls.Add(btnSave);
             Controls.Add(dataGridViewPro);
@@ -114,6 +121,7 @@
             Controls.Add(dataGridViewCat);
             Controls.Add(label2);
             Controls.Add(label1);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "AdminForm";
             Text = "AdminForm";
             ((System.ComponentModel.ISupportInitialize)dataGridViewCat).EndInit();

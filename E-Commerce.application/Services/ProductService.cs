@@ -12,6 +12,31 @@ namespace E_Commerce.application.Services
 {
     public class ProductService : IProductServices
     {
-        IProductRepository ProductRepo;
+        IProductRepository _context;
+        public ProductService(IProductRepository context)
+        {
+            _context = context;
+        }
+        public IQueryable<Product> GetAllProduct()
+        {
+            return _context.GetAll();
+        }
+        public void AddProduct(Product product)
+        {
+            _context.Create(product);
+
+        }
+        public void UpdateProduct(Product product)
+        {
+            _context.Update(product);
+        }
+        public void DeleteProduct(Product product)
+        {
+            _context.Delete(product);
+        }
+        public int saveProduct()
+        {
+            return _context.Save();
+        }
     }
 }

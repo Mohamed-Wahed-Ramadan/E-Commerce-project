@@ -1,14 +1,27 @@
-﻿using System;
+﻿using E_Commerce.application.Repository;
+using E_Commerce_project.models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using E_Commerce_project.models;
 
 
 namespace E_Commerce.application.Interfaces
 {
     public interface IProductServices
     {
+
+         IQueryable<Product> GetAllProduct();
+
+         void AddProduct(Product product);
+
+         void UpdateProduct(Product product);
+       
+       
+         void DeleteProduct(Product product);
+         int saveProduct();
+        
     }
 }
