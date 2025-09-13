@@ -19,7 +19,7 @@ namespace E_commerce.infratructure.Configurations
             builder.Property(u => u.UserName).IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(u => u.Password).IsRequired();
+            builder.Property(u => u.PasswordHash).IsRequired();
 
             builder.Property(u => u.Role).HasColumnType("nvarchar(50)")
                    .HasConversion<string>();

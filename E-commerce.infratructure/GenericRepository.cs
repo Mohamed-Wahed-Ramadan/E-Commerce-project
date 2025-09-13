@@ -51,37 +51,41 @@ namespace E_commerce.infratructure
 //-------------------------------------------------------//
     public class GenericRepository<T, TID> : IGenericRepository<T, TID> where T : BaseModel<TID>
     {
-        private readonly AppDbContext _appDbContext;
+        private protected readonly AppDbContext _dbContext;
         public GenericRepository(AppDbContext dbContext)
         {
-           _appDbContext = dbContext;   
+           _dbContext = dbContext;   
         }
         public void Add(T entity)
         {
-            _appDbContext.Add(entity);
+            _dbContext.Add(entity);
         }
 
         
 
         public void Delete(T entity)
         {
-            _appDbContext.Remove(entity);
+            _dbContext.Remove(entity);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _appDbContext.Set<T>().ToListAsync();
+            return await _dbContext.Set<T>().ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(TID id)
         {
-            return await _appDbContext.FindAsync<T>(id);
+            return await _dbContext.FindAsync<T>(id);
         }
 
         public void Update(T entity)
         {
+<<<<<<< HEAD
             _dbSet.Update(entity);
             _appDbContext.Update(entity);
+=======
+            _dbContext.Update(entity);
+>>>>>>> origin/master
         }
         public Task<int> CompleteAsync()
         {
