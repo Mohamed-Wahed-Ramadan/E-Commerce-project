@@ -10,5 +10,6 @@ namespace E_Commerce.application.Interfaces
 {
     public interface ICategoryServices
     {
+
     }
 }

@@ -45,9 +45,9 @@ namespace E_commerce.infratructure
         {
             _dbContext.Update(entity);
         }
-        public Task<int> CompleteAsync()
+        public async Task<int> CompleteAsync()
         {
-            throw new NotImplementedException();
+            return await _dbContext.SaveChangesAsync();
         }
     }
 

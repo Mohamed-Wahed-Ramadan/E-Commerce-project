@@ -11,8 +11,8 @@ namespace E_commerce.infratructure
 {
     internal class ProdsOrderRepository: IProdsOrderRepository
     {
-        E_commerceContext _context;
-        public ProdsOrderRepository(E_commerceContext context)
+        AppDbContext _context;
+        public ProdsOrderRepository(AppDbContext context)
         {
             _context = context;
         }

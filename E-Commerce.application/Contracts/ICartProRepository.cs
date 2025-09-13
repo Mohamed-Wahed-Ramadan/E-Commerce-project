@@ -9,7 +9,7 @@ namespace E_Commerce.application.Contracts
 {
     public interface ICartProRepository
     {
-        public void AddCartProduct(product pro, int quantity, int carId);
+        public void AddCartProduct(Product pro, int quantity, int carId);
         public void Save();
     }
 }
