@@ -41,6 +41,7 @@
             btnSignIn.TabIndex = 0;
             btnSignIn.Text = "Sign In";
             btnSignIn.UseVisualStyleBackColor = true;
+            btnSignIn.Click += btnSignIn_Click;
             // 
             // btnLogin
             // 
@@ -50,6 +51,7 @@
             btnLogin.TabIndex = 1;
             btnLogin.Text = "Login";
             btnLogin.UseVisualStyleBackColor = true;
+            btnLogin.Click += btnLogin_Click;
             // 
             // label1
             // 

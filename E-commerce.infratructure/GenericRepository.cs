@@ -1,5 +1,7 @@
 ﻿using E_Commerce.application.Contracts;
+using E_Commerce.context;
 using E_Commerce_project.models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using E_Commerce.context;
 using System.Collections.Generic;
@@ -10,47 +12,42 @@ using Microsoft.EntityFrameworkCore;
 
 namespace E_commerce.infratructure
 {
-    
-    public class GenaricRepositoties<T, TId> : IGenaricRepository<T, TId> where T : BaseModel<TId>
+    public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : BaseModel<TID>
     {
-        E_commerceContext _context;
-        DbSet<T> _dbSet;
-        public GenaricRepositoties(E_commerceContext context)
+        private protected readonly AppDbContext _dbContext;
+        public GenericRepository(AppDbContext dbContext)
         {
-            _context = context;
-            _dbSet = _context.Set<T>();
-            
+           _dbContext = dbContext;   
         }
-        public IQueryable<T> GetAll()
+        public void Add(T entity)
         {
-            return _dbSet;
+            _dbContext.Add(entity);
         }
-        public void Create(T entity)
-        {
-           _dbSet.Add(entity);  
 
-        }
+        
 
         public void Delete(T entity)
         {
-            _dbSet.Remove(entity);
+            _dbContext.Remove(entity);
         }
 
-
-        public T GetById(TId pk)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return _dbSet.Find(pk);
+            return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public int save()
+        public async Task<T?> GetByIdAsync(TID id)
         {
-            var ent = _context.ChangeTracker.Entries();
-            return _context.SaveChanges();  
+            return await _dbContext.FindAsync<T>(id);
         }
 
         public void Update(T entity)
         {
-            _dbSet.Update(entity);
+            _dbContext.Update(entity);
+        }
+        public Task<int> CompleteAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 
