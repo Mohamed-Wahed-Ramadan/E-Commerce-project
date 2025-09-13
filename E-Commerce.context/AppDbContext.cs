@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using E_Commerce_project.models;
 
+
 namespace E_Commerce.context
 {
     public class AppDbContext : DbContext
@@ -9,6 +10,13 @@ namespace E_Commerce.context
         {
             optionsBuilder.UseSqlServer(Connections.DataSource);
         }
+         public DbSet<order> orders { get; set; }
+        public DbSet<cart> carts { get; set; }
+        public DbSet<CartProduct> CartProducts { get; set; }
+        public DbSet<ProductOrder> ProductOrders { get; set; }
+        ////----------------------
+        public DbSet<User> Users { get; set; }
+        //--------
         public DbSet<Category> Categories { get; set; } 
         public DbSet<Product> Products { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -46,6 +54,7 @@ namespace E_Commerce.context
         }
 
        // public DbSet<category> categories { get; set; }
+
     }
 
 

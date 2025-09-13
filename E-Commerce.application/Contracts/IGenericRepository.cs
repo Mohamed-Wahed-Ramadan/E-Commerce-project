@@ -16,5 +16,10 @@ namespace E_Commerce.application.Contracts
         public void Delete(T entity);
         public int save();
 
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T?> GetByIdAsync(TID id);
+        void Add(T entity);
+        
+        Task<int> CompleteAsync();
     }
 }
