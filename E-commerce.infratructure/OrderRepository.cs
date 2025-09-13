@@ -1,5 +1,5 @@
 ﻿using E_Commerce.application.Repository;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;
@@ -11,22 +11,22 @@ namespace E_commerce.infratructure
 {
     public class OrderRepository : IOrderRepository
     {
-        E_commerceContext _context;
-        public OrderRepository(E_commerceContext context)
+        AppDbContext _context;
+        public OrderRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public List<order> GetAllOrders()
+        public List<Order> GetAllOrders()
         {
             return _context.orders.ToList();
         }
 
-        public void AddOrder(cart cart, int orderId)
+        public void AddOrder(Cart cart, int orderId)
         {
 
             _context.orders.Add(
-                new order
+                new Order
                 {
                     Id = orderId,
                     OrderDate = DateTime.Now,
@@ -37,7 +37,7 @@ namespace E_commerce.infratructure
 
         }
 
-        public void DeletOrder(order order)
+        public void DeletOrder(Order order)
         {
             _context.orders.Remove(order);
         }

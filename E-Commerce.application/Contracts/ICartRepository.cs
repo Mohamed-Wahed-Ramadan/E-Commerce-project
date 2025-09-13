@@ -9,10 +9,10 @@ namespace E_Commerce.application.Repository
 {
     public interface ICartRepository
     {
-        public List<cart> GetAllCarts();
+        public List<Cart> GetAllCarts();
         public void CalculatTotalPrice();
-        public void AddCart(cart cart);
-        public void DelectCart(cart cart);
+        public void AddCart(Cart cart);
+        public void DelectCart(Cart cart);
         public void Save();
     }
 }

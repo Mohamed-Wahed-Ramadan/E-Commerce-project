@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application.Repository
 {
-    public interface IUserRepository : IGenericRepository<User,int>
+    public interface IUserRepository : IGenaricRepository<User,int>
     {
         public Task<User?> GetUserByEmailAsync(string email);
         public Task<User?> GetUserByUsernameAsync(string username);

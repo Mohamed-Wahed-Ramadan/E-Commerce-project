@@ -1,5 +1,5 @@
 ﻿using E_Commerce.application.Repository;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models.User;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,6 +15,7 @@ namespace E_commerce.infratructure
     {
         public UserRepository(AppDbContext dbContext) : base(dbContext)
         {
+
         }
 
         public bool SignIn(User user, string password)

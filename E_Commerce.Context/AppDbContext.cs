@@ -1,24 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore;
-using E_Commerce_project.models;
+﻿using E_Commerce_project.models;
+using E_Commerce_project.models.User;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace E_Commerce.context
+namespace E_Commerce.Context
 {
     public class AppDbContext : DbContext
     {
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(Connections.DataSource);
-        }
-         public DbSet<order> orders { get; set; }
-        public DbSet<cart> carts { get; set; }
+
+        
+            protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            {
+                optionsBuilder.UseSqlServer(Connections.DataSource);
+            }
+
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Order> orders { get; set; }
+        public DbSet<Cart> carts { get; set; }
         public DbSet<CartProduct> CartProducts { get; set; }
         public DbSet<ProductOrder> ProductOrders { get; set; }
-        ////----------------------
         public DbSet<User> Users { get; set; }
-        //--------
-        public DbSet<Category> Categories { get; set; } 
-        public DbSet<Product> Products { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>().HasData(
@@ -53,9 +60,8 @@ namespace E_Commerce.context
             );
         }
 
-       // public DbSet<category> categories { get; set; }
-
     }
 
 
+    
 }

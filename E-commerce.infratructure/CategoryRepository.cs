@@ -1,13 +1,13 @@
 ﻿using E_Commerce.application.Repository;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models;
 
 namespace E_commerce.infratructure
 {
     public class CategoryRepository : ICategoryRepository
     {
-        E_commerceContext _context;//= new();
-        public CategoryRepository(E_commerceContext context)
+        AppDbContext _context;//= new();
+        public CategoryRepository(AppDbContext context)
         {
             _context = context;
         }

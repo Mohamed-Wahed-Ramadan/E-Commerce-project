@@ -1,5 +1,5 @@
 ﻿using E_Commerce.application.Contracts;
-using E_Commerce.context;
+using E_Commerce.Context;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ namespace E_commerce.infratructure
 {
     internal class CartProRepository: ICartProRepository
     {
-        E_commerceContext _context;
-        public CartProRepository(E_commerceContext context)
+        AppDbContext _context;
+        public CartProRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public void AddCartProduct(product pro, int quantity,int carId )
+        public void AddCartProduct(Product pro, int quantity,int carId )
         {
             _context.CartProducts.Add(
                 new CartProduct
