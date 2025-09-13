@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce_project.models
 {
-    internal class CartProduct
+    public  class CartProduct
     {
     }
 }
