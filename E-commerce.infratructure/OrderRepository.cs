@@ -30,7 +30,7 @@ namespace E_commerce.infratructure
                 {
                     Id = orderId,
                     OrderDate = DateTime.Now,
-                    User = cart.User,
+                    //User = cart.user,
                     OrderTotalPrice = cart.OrderTotalPrice
                 }
                 );
