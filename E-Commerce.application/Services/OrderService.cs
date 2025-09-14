@@ -12,26 +12,26 @@ namespace E_Commerce.application.Services
 {
     public class OrderService : IOrderServices
     {
-        IOrderRepository OrderRepo;
+        IOrderRepository _orderRepo;
 
         public void AddOrder(Cart cart, int orderId)
         {
-            throw new NotImplementedException();
+            _orderRepo.AddOrder(cart,orderId);
         }
 
         public void DeletOrder(Order order)
         {
-            throw new NotImplementedException();
+            _orderRepo.DeletOrder(order);
         }
 
         public List<Order> GetAllOrders()
         {
-            throw new NotImplementedException();
+           return _orderRepo.GetAllOrders();
         }
 
         public void Save()
         {
-            throw new NotImplementedException();
+            _orderRepo.Save();
         }
     }
 }

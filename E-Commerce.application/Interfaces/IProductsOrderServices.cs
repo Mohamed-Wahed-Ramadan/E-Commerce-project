@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_Commerce.application.Contracts
+namespace E_Commerce.application.Interfaces
 {
-    public interface ICartProRepository
+    public interface IProductsOrderServices
     {
-        public void AddCartProduct(Product pro);
+        public void AddProductsOrder(Cart cart);
         public void Save();
     }
 }
