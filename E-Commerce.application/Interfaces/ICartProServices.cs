@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Commerce_project.models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,7 @@ namespace E_Commerce.application.Interfaces
 {
     public interface ICartProServices
     {
+        public void AddCartProduct(Product pro);
+        public void Save();
     }
 }

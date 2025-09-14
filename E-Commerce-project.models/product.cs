@@ -26,5 +26,8 @@ namespace E_Commerce_project.models
         [Required]
         public int StockQuantity { get; set; }
         public List<CartProduct> CartProducts { get; set; }
+        public List<ProductOrder> ProductOrders { get; set; }
+
+
     }
 }

@@ -14,6 +14,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\E-Commerce-project.models\E-Commerce-project.models.csproj" />
+    <ProjectReference Include="..\E-Commerce.application\E-Commerce.application.csproj" />
+    <ProjectReference Include="..\E-Commerce.DTOs\E-Commerce.DTOs.csproj" />
+    <ProjectReference Include="..\E-commerce.infratructure\E-commerce.infratructure.csproj" />
+    <ProjectReference Include="..\E_Commerce.Context\E_Commerce.Context.csproj" />
   </ItemGroup>
 
   <ItemGroup>
