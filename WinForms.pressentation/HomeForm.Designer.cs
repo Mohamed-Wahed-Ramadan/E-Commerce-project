@@ -39,9 +39,10 @@
             // 
             // btnCart
             // 
-            btnCart.Location = new Point(1008, 405);
+            btnCart.Location = new Point(1152, 540);
+            btnCart.Margin = new Padding(3, 4, 3, 4);
             btnCart.Name = "btnCart";
-            btnCart.Size = new Size(98, 33);
+            btnCart.Size = new Size(112, 44);
             btnCart.TabIndex = 0;
             btnCart.Text = "Go To Cart";
             btnCart.UseVisualStyleBackColor = true;
@@ -49,9 +50,10 @@
             // 
             // btnOrder
             // 
-            btnOrder.Location = new Point(12, 405);
+            btnOrder.Location = new Point(14, 540);
+            btnOrder.Margin = new Padding(3, 4, 3, 4);
             btnOrder.Name = "btnOrder";
-            btnOrder.Size = new Size(98, 33);
+            btnOrder.Size = new Size(112, 44);
             btnOrder.TabIndex = 1;
             btnOrder.Text = "Go To Order";
             btnOrder.UseVisualStyleBackColor = true;
@@ -61,40 +63,48 @@
             // 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { img, btnAddToCart });
-            dataGridView1.Location = new Point(9, 53);
+            dataGridView1.Location = new Point(10, 71);
+            dataGridView1.Margin = new Padding(3, 4, 3, 4);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(1097, 328);
+            dataGridView1.RowHeadersWidth = 51;
+            dataGridView1.Size = new Size(1254, 437);
             dataGridView1.TabIndex = 3;
+            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
             // 
             // img
             // 
             img.HeaderText = "Product Img";
+            img.MinimumWidth = 6;
             img.Name = "img";
+            img.Width = 125;
             // 
             // btnAddToCart
             // 
             btnAddToCart.HeaderText = "Add To Cart";
+            btnAddToCart.MinimumWidth = 6;
             btnAddToCart.Name = "btnAddToCart";
+            btnAddToCart.Width = 125;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(522, 19);
+            label1.Location = new Point(597, 25);
             label1.Name = "label1";
-            label1.Size = new Size(69, 15);
+            label1.Size = new Size(88, 20);
             label1.TabIndex = 4;
             label1.Text = "Home Bage";
             // 
             // HomeForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveBorder;
-            ClientSize = new Size(1118, 450);
+            ClientSize = new Size(1278, 600);
             Controls.Add(label1);
             Controls.Add(dataGridView1);
             Controls.Add(btnOrder);
             Controls.Add(btnCart);
+            Margin = new Padding(3, 4, 3, 4);
             Name = "HomeForm";
             Text = "HomeForm";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();

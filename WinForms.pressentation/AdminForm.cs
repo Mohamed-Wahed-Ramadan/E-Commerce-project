@@ -1,7 +1,9 @@
 ﻿using E_commerce.infratructure;
 using E_Commerce.application.Interfaces;
+using E_Commerce.application.Mapper;
 using E_Commerce.application.Repository;
 using E_Commerce.Context;
+using E_Commerce.DTOs.CategoryDtos;
 using E_Commerce_project.models;
 namespace WinForms.pressentation
 {
@@ -9,15 +11,16 @@ namespace WinForms.pressentation
     {
         public AdminForm()
         {
+            MapsterConfigCategory.RegisterMapsterConfiguration();
             InitializeComponent();
-            AppDbContext
-            ICategoryRepository categoryRepository = new CategoryRepository(); 
-            _icategoryService = new ICategoryServices( );
+            AppDbContext appDbContext = new AppDbContext();
+            ICategoryRepository categoryRepository = new CategoryRepository(appDbContext); 
+            //_icategoryService = new ICategoryServices( categoryRepository);
 
         }
 
         ICategoryServices _icategoryService;
-        List<Category> CategoriesList;
+        List<CategoryReadDto> CategoriesList;
         BindingSource bindingSource;
         private void btnBack_Click(object sender, EventArgs e)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application
 {
-    public class CategoryUpdateDto
+    public class CategoryUpdateDto 
     {
         public int Id { get; set; }
         public string Name { get; set; }

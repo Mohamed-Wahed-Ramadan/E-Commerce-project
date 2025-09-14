@@ -12,7 +12,7 @@ namespace E_Commerce.application.Interfaces
 {
     public interface ICategoryServices
     {
-        IQueryable<CategoryReadDto>  GetAllCategory();
+        List<CategoryReadDto>  GetAllCategory();
 
         void AddCategory(CategoryCreateDto category);
 

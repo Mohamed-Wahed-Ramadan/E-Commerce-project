@@ -1,4 +1,6 @@
 ﻿using E_Commerce.application.Repository;
+using E_Commerce.DTOs.Product;
+using E_Commerce.DTOs.ProductDtos;
 using E_Commerce_project.models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,11 +15,11 @@ namespace E_Commerce.application.Interfaces
     public interface IProductServices
     {
 
-         IQueryable<Product> GetAllProduct();
+         List<ProductReadDto> GetAllProduct();
 
-         void AddProduct(Product product);
+         void AddProduct(ProductCreateDto product);
 
-         void UpdateProduct(Product product);
+         void UpdateProduct(ProductUpdateDto product);
        
        
          void DeleteProduct(Product product);
