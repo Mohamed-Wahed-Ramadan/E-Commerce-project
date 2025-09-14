@@ -17,14 +17,13 @@ namespace E_commerce.infratructure
             _context = context;
         }
 
-        public void AddCartProduct(Product pro, int quantity,int carId )
+        public void AddCartProduct(Product pro)
         {
             _context.CartProducts.Add(
                 new CartProduct
                 {
-                    CartId = carId,
                     ProductId = pro.Id,
-                    Quantity = quantity
+                    Quantity = 1
                 } );
         }
 

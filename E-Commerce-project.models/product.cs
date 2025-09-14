@@ -25,6 +25,7 @@ namespace E_Commerce_project.models
         public string? ImagePath { get; set; }
         [Required]
         public int StockQuantity { get; set; }
+        public List<ProductOrder> ProductOrder { get; set; }
         public List<CartProduct> CartProducts { get; set; }
     }
 }

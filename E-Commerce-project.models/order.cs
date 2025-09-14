@@ -8,7 +8,7 @@ namespace E_Commerce_project.models
 {
     public class Order : BaseModel<int>
     {
-        public List<ProductOrder> ProductOrder { get; set; }
+        public List<ProductOrder> ProductOrders { get; set; }
         public User.User User { get; set; }
         public decimal OrderTotalPrice { get; set; }
         public DateTime OrderDate { get; set; }
