@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository :GenericRepository<Product,int >, IProductRepository
     {
         AppDbContext _context;//= new();
-        public ProductRepository(AppDbContext context)
+        public ProductRepository(AppDbContext context):base(context) 
         {
             _context = context;
         }
+        #region ProductRepo
+
         public IQueryable<Product> GetAll()
         {
             return _context.Products;
@@ -38,7 +40,8 @@ namespace E_commerce.infratructure
         public int Save()
         {
             return _context.SaveChanges();
-        }
+        } 
+        #endregion
 
     }
 }

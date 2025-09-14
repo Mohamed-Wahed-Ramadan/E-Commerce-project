@@ -86,6 +86,7 @@
             dataGridViewPro.RowHeadersWidth = 51;
             dataGridViewPro.Size = new Size(894, 212);
             dataGridViewPro.TabIndex = 4;
+            dataGridViewPro.CellContentClick += dataGridViewPro_CellContentClick;
             // 
             // btnSave
             // 
@@ -96,6 +97,7 @@
             btnSave.TabIndex = 5;
             btnSave.Text = "Save";
             btnSave.UseVisualStyleBackColor = true;
+            btnSave.Click += btnSave_Click;
             // 
             // btnBack
             // 

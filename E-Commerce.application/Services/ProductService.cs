@@ -1,4 +1,5 @@
-﻿using E_Commerce.application.Interfaces;
+﻿using E_Commerce.application.Contracts;
+using E_Commerce.application.Interfaces;
 using E_Commerce.application.Repository;
 using E_Commerce.DTOs.CategoryDtos;
 using E_Commerce.DTOs.Product;
@@ -16,14 +17,15 @@ namespace E_Commerce.application.Services
 {
     public class ProductService : IProductServices
     {
-        IProductRepository _context;
-        public ProductService(IProductRepository context)
+        //IProductRepository _context;
+        IGenaricRepository<Product, int> _context;
+        public ProductService(IGenaricRepository<Product, int> context)
         {
             _context = context;
         }
         public List<ProductReadDto> GetAllProduct()
         {
-            IQueryable<Product> AllProduct = _context.GetAll();
+            IQueryable<Product> AllProduct =(IQueryable<Product>) _context.GetAllAsync();
             var Allprod= AllProduct.ToList().Adapt<List<ProductReadDto>>();
 
             return Allprod;
@@ -31,7 +33,7 @@ namespace E_Commerce.application.Services
         public void AddProduct(ProductCreateDto productC)
         {
             Product product1 = productC.Adapt<Product>();
-            _context.Create(product1);
+            _context.Add(product1);
 
         }
         public void UpdateProduct(ProductUpdateDto productU)
@@ -45,7 +47,7 @@ namespace E_Commerce.application.Services
         }
         public int saveProduct()
         {
-            return _context.Save();
+            return _context.CompleteAsync();
         }
     }
 }

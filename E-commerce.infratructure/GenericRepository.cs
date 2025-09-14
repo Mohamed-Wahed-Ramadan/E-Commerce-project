@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : BaseModel<TID>
 {
     private protected readonly AppDbContext _dbContext;
+    private protected readonly DbSet<T> _dbSet; 
     public GenericRepository(AppDbContext dbContext)
     {
         _dbContext = dbContext;
+        _dbSet=_dbContext.Set<T>();
     }
     public void Add(T entity)
     {
@@ -24,20 +26,20 @@ public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : Ba
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await _dbContext.Set<T>().ToListAsync();
+        return await _dbSet.ToListAsync();
     }
 
     public async Task<T?> GetByIdAsync(TID id)
     {
-        return await _dbContext.FindAsync<T>(id);
+        return await _dbContext.FindAsync<T>(id); 
     }
 
     public void Update(T entity)
     {
         _dbContext.Update(entity);
     }
-    public async Task<int> CompleteAsync()
+    public int CompleteAsync()
     {
-        return await _dbContext.SaveChangesAsync();
+        return _dbContext.SaveChanges();
     }
 }

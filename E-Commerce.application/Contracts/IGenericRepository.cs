@@ -15,6 +15,6 @@ namespace E_Commerce.application.Contracts
         void Add(T entity);
         void Update(T entity); 
         void Delete(T entity);
-        Task<int> CompleteAsync();
+        int CompleteAsync();
     }
 }
