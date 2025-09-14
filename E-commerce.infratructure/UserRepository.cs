@@ -20,7 +20,7 @@ namespace E_commerce.infratructure
 
         public bool SignIn(User user, string password)
         {
-            return user.PasswordHash.Equals(password) ? true : false;
+            return user.PasswordHash.Equals(Hash(password)) ? true : false;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)

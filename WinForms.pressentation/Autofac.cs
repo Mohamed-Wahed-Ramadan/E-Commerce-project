@@ -21,16 +21,23 @@ namespace WinForms.pressentation
             var builder = new ContainerBuilder();
             builder.RegisterType<AppDbContext>().As<AppDbContext>();
 
+            builder.RegisterGeneric(typeof(GenericRepository<,>))
+                   .As(typeof(IGenaricRepository<,>));
+
+            #region UserServices
+            builder.RegisterType<IUserRepository>().As<UserRepository>();
+            builder.RegisterType<IUserServices>().As<UserService>();
+
+            #endregion
+
             #region AutofacCategory
             builder.RegisterType<ICategoryServices>().As<CategoryService>();
             builder.RegisterType<ICategoryRepository>().As<CategoryRepository>();
-            builder.RegisterType<IGenaricRepository<Category, int>>().As<GenericRepository<Category, int>>();
             #endregion
 
             #region AutofacProduct
             builder.RegisterType<IProductServices>().As<ProductService>();
             builder.RegisterType<IProductRepository>().As<ProductRepository>();
-            builder.RegisterType<IGenaricRepository<Product, int>>().As<GenericRepository<Product, int>>();
             #endregion
 
             return builder.Build();
