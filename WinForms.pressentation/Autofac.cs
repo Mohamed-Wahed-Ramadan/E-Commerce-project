@@ -25,19 +25,19 @@ namespace WinForms.pressentation
                    .As(typeof(IGenaricRepository<,>));
 
             #region UserServices
-            //builder.RegisterType<IUserServices>().As<UserService>();
-            //builder.RegisterType<IUserRepository>().As<UserRepository>();
+            builder.RegisterType<UserService>().As<IUserServices>();
+            builder.RegisterType<UserRepository>().As<IUserRepository>();
 
             #endregion
 
             #region AutofacCategory
-            builder.RegisterType<ICategoryServices>().As<CategoryService>();
-            builder.RegisterType<ICategoryRepository>().As<CategoryRepository>();
+            builder.RegisterType<CategoryService>().As<ICategoryServices>();
+            builder.RegisterType<CategoryRepository>().As<ICategoryRepository>();
             #endregion
 
             #region AutofacProduct
-            builder.RegisterType<IProductServices>().As<ProductService>();
-            builder.RegisterType<IProductRepository>().As<ProductRepository>();
+            builder.RegisterType<ProductService>().As<IProductServices>();
+            builder.RegisterType<ProductRepository>().As<IProductRepository>();
             #endregion
 
             return builder.Build();
