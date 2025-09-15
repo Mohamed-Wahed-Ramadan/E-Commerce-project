@@ -17,6 +17,10 @@ namespace E_Commerce.Context.Configuration
             builder.HasMany(o => o.ProductOrders).WithOne(po=> po.Order).HasForeignKey(po=> po.OrderId);
             builder.Property(o => o.OrderTotalPrice).IsRequired();
             builder.Property(o => o.OrderDate).IsRequired();
+
+            builder.HasOne(o => o.User)
+                   .WithMany(u => u.Orders)
+                   .HasForeignKey(o => o.UserId);
         }
 
         

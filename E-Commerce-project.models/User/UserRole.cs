@@ -8,7 +8,7 @@ namespace E_Commerce_project.models.User
 {
     public enum UserRole
     {
-        Admin,
+        Admin = 1,
         Customer
     }
 }

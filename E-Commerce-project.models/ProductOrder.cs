@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce_project.models
 {
-    public class ProductOrder
+    public class ProductOrder : BaseModel<int>
     {
         public int OrderId { get; set; }
         public Order Order { get; set; }

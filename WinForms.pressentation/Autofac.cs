@@ -25,8 +25,8 @@ namespace WinForms.pressentation
                    .As(typeof(IGenaricRepository<,>));
 
             #region UserServices
-            builder.RegisterType<IUserRepository>().As<UserRepository>();
-            builder.RegisterType<IUserServices>().As<UserService>();
+            //builder.RegisterType<IUserServices>().As<UserService>();
+            //builder.RegisterType<IUserRepository>().As<UserRepository>();
 
             #endregion
 

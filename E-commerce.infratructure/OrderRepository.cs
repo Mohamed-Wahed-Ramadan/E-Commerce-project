@@ -19,13 +19,13 @@ namespace E_commerce.infratructure
 
         public List<Order> GetAllOrders()
         {
-            return _context.orders.ToList();
+            return _context.Orders.ToList();
         }
 
         public void AddOrder(Cart cart, int orderId)
         {
 
-            _context.orders.Add(
+            _context.Orders.Add(
                 new Order
                 {
                     Id = orderId,
@@ -39,7 +39,7 @@ namespace E_commerce.infratructure
 
         public void DeletOrder(Order order)
         {
-            _context.orders.Remove(order);
+            _context.Orders.Remove(order);
         }
 
         public void Save()
