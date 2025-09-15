@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Crypt = BCrypt.Net.BCrypt;
 
 namespace E_commerce.infratructure
 {
@@ -20,7 +21,7 @@ namespace E_commerce.infratructure
 
         public bool SignIn(User user, string password)
         {
-            return user.PasswordHash.Equals(Hash(password)) ? true : false;
+            return VerifyPassword(password, user.PasswordHash);
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
@@ -58,7 +59,15 @@ namespace E_commerce.infratructure
         }
         public string Hash(string password)
         {
-            return password.GetHashCode().ToString();
+            // Generate a salt and hash the password using bcrypt
+            // The cost factor of 12 provides a good balance of security and performance
+            return Crypt.HashPassword(password);
+        }
+
+        // Additional method for verifying passwords
+        public bool VerifyPassword(string password, string hash)
+        {
+            return Crypt.Verify(password, hash);
         }
 
         public User? GetUserByEmail(string email)
