@@ -30,11 +30,11 @@ namespace E_Commerce.Context.Configuration
                    .HasConversion<string>();
 
             
-             builder.HasData(
-                    new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-                                PasswordHash = "admin".GetHashCode().ToString(),
-                                Role = UserRole.Admin, UserName = "admin" }
-                );
+             //builder.HasData(
+             //       new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
+             //                   PasswordHash = "admin".GetHashCode().ToString(),
+             //                   Role = UserRole.Admin, UserName = "admin" }
+             //   );
              
 
 
