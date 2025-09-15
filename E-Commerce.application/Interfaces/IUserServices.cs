@@ -14,5 +14,7 @@ namespace E_Commerce.application.Interfaces
     {
         Task<(bool, string)> RegisterAsync(CreateUserDTO user);
         Task<(UserResponse?, string)> LoginAsync(string Email, string Password);
+        (bool, string) Register(CreateUserDTO user);
+        (UserResponse?, string) Login(string Email, string Password);
     }
 }

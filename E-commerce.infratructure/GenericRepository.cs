@@ -42,4 +42,14 @@ public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : Ba
     {
         return _dbContext.SaveChanges();
     }
+
+    public IEnumerable<T> GetAll()
+    {
+        return _dbSet.ToList();
+    }
+
+    public T? GetById(TID id)
+    {
+        return _dbSet.Find(id);
+    }
 }

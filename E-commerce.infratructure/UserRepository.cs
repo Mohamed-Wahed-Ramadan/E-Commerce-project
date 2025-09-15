@@ -35,7 +35,7 @@ namespace E_commerce.infratructure
             }
         }
 
-        public async Task<User?> GetUserByUsernameAsync(string username)
+        public async Task<User?> GetUserByUserNameAsync(string username)
         {
             try
             {
@@ -59,6 +59,30 @@ namespace E_commerce.infratructure
         public string Hash(string password)
         {
             return password.GetHashCode().ToString();
+        }
+
+        public User? GetUserByEmail(string email)
+        {
+            try
+            {
+                return _dbContext.Users.SingleOrDefault(u => u.Email.Equals(email));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public User? GetUserByUserName(string username)
+        {
+            try
+            {
+                return _dbContext.Users.SingleOrDefault(u => u.UserName == username);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
