@@ -14,7 +14,7 @@ namespace E_Commerce.application.Interfaces
     {
         List<CategoryReadDto>  GetAllCategory();
 
-        void AddCategory(CategoryCreateDto category);
+        void AddCategory(CategoryReadDto category);
 
         void UpdateCategory(CategoryUpdateDto category);
 

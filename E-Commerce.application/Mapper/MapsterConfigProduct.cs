@@ -18,6 +18,8 @@ namespace E_Commerce.application.Mapper
                 //Map(des=>des.Id, src=>src.Id);
             TypeAdapterConfig<ProductCreateDto,Product>.NewConfig();
             TypeAdapterConfig<ProductUpdateDto, Product>.NewConfig();
+            TypeAdapterConfig<ProductReadDto, Product>.NewConfig();
+
 
 
 

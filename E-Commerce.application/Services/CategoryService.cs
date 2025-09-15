@@ -25,12 +25,12 @@ namespace E_Commerce.application.Services
         }
         public List<CategoryReadDto> GetAllCategory()
         {
-            IQueryable<Category> AllCategoty = (IQueryable<Category>)_context.GetAllAsync();
+            IQueryable<Category> AllCategoty = _context.GetAll();
             var AllCats= AllCategoty.Where(a=> a.Products.Count > 0).ToList().Adapt<List<CategoryReadDto>>();
             
             return AllCats;
         }
-        public void AddCategory(CategoryCreateDto Creatcategory) 
+        public void AddCategory(CategoryReadDto Creatcategory) 
         {
             //Category category = new Category()
             //{

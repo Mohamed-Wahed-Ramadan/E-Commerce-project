@@ -17,7 +17,7 @@ namespace E_Commerce.application.Interfaces
 
          List<ProductReadDto> GetAllProduct();
 
-         void AddProduct(ProductCreateDto product);
+         void AddProduct(ProductReadDto product);
 
          void UpdateProduct(ProductUpdateDto product);
        

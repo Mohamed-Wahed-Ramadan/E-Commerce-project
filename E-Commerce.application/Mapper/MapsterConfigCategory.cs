@@ -18,12 +18,14 @@ namespace E_Commerce.application.Mapper
             TypeAdapterConfig<Category, CategoryReadDto>.NewConfig();
             //Map(des => des.Id, src => src.Id).
             //Map(des => des.Name, src => src.Name);
-            TypeAdapterConfig<CategoryCreateDto, Category>.NewConfig().
-            Map(des=> des.Name, src => src.Name) ;
-            TypeAdapterConfig<CategoryUpdateDto, Category>.NewConfig().
-            Map(des => des.Id, src => src.Id).
-            Map(des => des.Name, src => src.Name);
-            
+            TypeAdapterConfig<CategoryCreateDto, Category>.NewConfig();
+            //Map(des=> des.Name, src => src.Name) ;
+            TypeAdapterConfig<CategoryUpdateDto, Category>.NewConfig();
+            //Map(des => des.Id, src => src.Id).
+            //Map(des => des.Name, src => src.Name);
+            TypeAdapterConfig<CategoryReadDto, Category>.NewConfig();
+
+
 
 
 

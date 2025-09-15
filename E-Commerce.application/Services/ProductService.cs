@@ -25,12 +25,12 @@ namespace E_Commerce.application.Services
         }
         public List<ProductReadDto> GetAllProduct()
         {
-            IQueryable<Product> AllProduct =(IQueryable<Product>) _context.GetAllAsync();
+            IQueryable<Product> AllProduct = _context.GetAll();
             var Allprod= AllProduct.ToList().Adapt<List<ProductReadDto>>();
 
             return Allprod;
         }
-        public void AddProduct(ProductCreateDto productC)
+        public void AddProduct(ProductReadDto productC)
         {
             Product product1 = productC.Adapt<Product>();
             _context.Add(product1);
