@@ -11,7 +11,9 @@ namespace E_Commerce.application.Contracts
     {
 
         Task<IEnumerable<T>> GetAllAsync();
+        IEnumerable<T> GetAll();
         Task<T?> GetByIdAsync(TId id);
+        T? GetById(TId id);
         void Add(T entity);
         void Update(T entity); 
         void Delete(T entity);

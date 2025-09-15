@@ -1,4 +1,5 @@
-﻿using E_Commerce_project.models.User;
+﻿using BCrypt.Net;
+using E_Commerce_project.models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Crypt = BCrypt.Net.BCrypt;
 
 namespace E_Commerce.Context.Configuration
 {
@@ -30,11 +32,11 @@ namespace E_Commerce.Context.Configuration
                    .HasConversion<string>();
 
             
-             //builder.HasData(
-             //       new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-             //                   PasswordHash = "admin".GetHashCode().ToString(),
-             //                   Role = UserRole.Admin, UserName = "admin" }
-             //   );
+             builder.HasData(
+                    new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
+                                PasswordHash = Crypt.HashPassword("admin"),
+                                Role = UserRole.Admin, UserName = "admin" }
+                );
              
 
 
