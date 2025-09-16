@@ -17,13 +17,13 @@ namespace WinForms.pressentation
 {
     public partial class SignInForm : Form
     {
-        private readonly UserService _userService;
+        private readonly IUserServices _userService;
 
         public SignInForm()
         {
             InitializeComponent();
             var builder = Autofac.Inject();
-            _userService = (UserService?)builder.Resolve<IUserServices>();
+            _userService = builder.Resolve<IUserServices>();
            
         }
 

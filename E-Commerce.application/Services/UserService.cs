@@ -61,6 +61,9 @@ namespace E_Commerce.application.Services
 
 
             _userRepository.Add(user.ToUser());
+            int sucsses = _userRepository.Complete();
+            if (sucsses < 1)
+                return (false, "Error occured while saveing Changes!");
 
             return (true, "you Succesfully Registered!");
         }
@@ -79,6 +82,9 @@ namespace E_Commerce.application.Services
 
 
             _userRepository.Add(userRequest.ToUser());
+            int sucsses = await _userRepository.CompleteAsync();
+            if (sucsses < 1)
+                return (false, "Error occured while saveing Changes!");
 
             return (true, "you Succesfully Registered!");
             

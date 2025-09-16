@@ -33,31 +33,22 @@ namespace WinForms.pressentation
 
         private async void btnDone_Click(object sender, EventArgs e)
         {
-            if(txtEmail.Text == "admin" && txtPassword.Text == "admin")
+            var (userResponse, message) = await _userService.LoginAsync(txtEmail.Text, txtPassword.Text);
+            if(userResponse is null)
+                MessageBox.Show(message, "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else if (userResponse.Role == UserRole.Admin)
             {
-                AdminForm adminform = new AdminForm();
+                AdminForm adminform = new AdminForm(userResponse);
                 this.Hide();
                 adminform.Show();
             }
             else
             {
-                if (!string.IsNullOrEmpty(txtEmail.Text) && !string.IsNullOrEmpty(txtPassword.Text))
-                {
-                    var (userResponse, message) = await _userService.LoginAsync(txtEmail.Text, txtPassword.Text);
-
-                    if (message == "Success!" && userResponse != null)
-                    {
-                        HomeForm homeform = new HomeForm();
-                        this.Hide();
-                        homeform.Show();
-                    }
-                    else
-                    {
-                        MessageBox.Show(message, "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                HomeForm homeform = new HomeForm(userResponse);
+                this.Hide();
+                homeform.Show();
             }
-
+            
         }
     }
 }

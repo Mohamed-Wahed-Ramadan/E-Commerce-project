@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Commerce.DTOs.User;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,21 +13,24 @@ namespace WinForms.pressentation
 {
     public partial class CartForm : Form
     {
-        public CartForm()
+        private readonly UserResponse _user;
+
+        public CartForm(UserResponse user)
         {
             InitializeComponent();
+            this._user = user;
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            HomeForm homeForm = new HomeForm();
+            HomeForm homeForm = new HomeForm(_user);
             this.Hide();
             homeForm.Show();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            //
+            
         }
 
         private void btnConf_Click(object sender, EventArgs e)

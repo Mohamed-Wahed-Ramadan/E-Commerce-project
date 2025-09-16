@@ -38,9 +38,13 @@ public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : Ba
     {
         _dbContext.Update(entity);
     }
-    public int CompleteAsync()
+    public int Complete()
     {
         return _dbContext.SaveChanges();
+    }
+    public async Task<int> CompleteAsync()
+    {
+        return await _dbContext.SaveChangesAsync();
     }
 
     public IQueryable<T> GetAll()

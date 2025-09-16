@@ -5,6 +5,7 @@ using E_Commerce.application.Services;
 using E_Commerce.DTOs.CategoryDtos;
 using E_Commerce.DTOs.Product;
 using E_Commerce.DTOs.ProductDtos;
+using E_Commerce.DTOs.User;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace WinForms.pressentation
     {
 
 
-        public HomeForm()
+        public HomeForm(UserResponse? user)
         {
             InitializeComponent();
             MapsterConfigCategory.RegisterMapsterConfiguration();
@@ -33,21 +34,23 @@ namespace WinForms.pressentation
             var builder = Autofac.Inject();
             _productServices = builder.Resolve<IProductServices>();
             LoadProduct();
-
+            _user = user;
         }
         IProductServices _productServices;
         List<ProductReadDto> ProductsList;
         BindingSource bindingSourceProduct;
+        private readonly UserResponse? _user;
+
         private void btnCart_Click(object sender, EventArgs e)
         {
-            CartForm cartForm = new CartForm();
+            CartForm cartForm = new CartForm(_user);
             this.Hide();
             cartForm.Show();
         }
 
         private void btnOrder_Click(object sender, EventArgs e)
         {
-            OrderForm orderForm = new OrderForm();
+            OrderForm orderForm = new OrderForm(_user);
             this.Hide();
             orderForm.Show();
         }

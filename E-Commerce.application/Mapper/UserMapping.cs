@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Crypt = BCrypt.Net.BCrypt;
 
 namespace E_Commerce.application.Mapper
 {
@@ -14,6 +15,7 @@ namespace E_Commerce.application.Mapper
         {
             return new UserResponse
             {
+                Id = user.Id,
                 Name = user.UserName,
                 Email = user.Email,
                 Role = user.Role,
@@ -25,7 +27,7 @@ namespace E_Commerce.application.Mapper
             {
                UserName = userDto.UserName,
                Email = userDto.Email,
-               PasswordHash = userDto.Password.GetHashCode().ToString(),
+               PasswordHash = Crypt.HashPassword(userDto.Password),
             };
         }
     }

@@ -11,6 +11,7 @@ using E_Commerce.DTOs.Category;
 using E_Commerce.DTOs.CategoryDtos;
 using E_Commerce.DTOs.Product;
 using E_Commerce.DTOs.ProductDtos;
+using E_Commerce.DTOs.User;
 using E_Commerce_project.models;
 using System.Windows.Forms;
 namespace WinForms.pressentation
@@ -61,7 +62,7 @@ namespace WinForms.pressentation
             };
 
         }
-        public AdminForm()
+        public AdminForm(UserResponse user)
         {
 
             InitializeComponent();
@@ -75,8 +76,7 @@ namespace WinForms.pressentation
             _productServices = builder.Resolve<IProductServices>();
             LoadCategory();
             LoadProduct();
-
-
+            _user = user;
         }
 
         ICategoryServices _icategoryService;
@@ -85,9 +85,11 @@ namespace WinForms.pressentation
         List<CategoryReadDto> CategoriesList;
         BindingSource bindingSourceProduct;
         BindingSource bindingSourceCategory;
+        private readonly UserResponse _user;
+
         private void btnBack_Click(object sender, EventArgs e)
         {
-            HomeForm homeForm = new HomeForm();
+            HomeForm homeForm = new HomeForm(_user);
             this.Hide();
             homeForm.Show();
         }
