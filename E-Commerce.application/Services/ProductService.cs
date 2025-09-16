@@ -23,26 +23,28 @@ namespace E_Commerce.application.Services
         {
             _context = context;
         }
-        public List<ProductReadDto> GetAllProduct()
+        public List<Product> GetAllProduct()
         {
             IQueryable<Product> AllProduct = _context.GetAll();
-            var Allprod= AllProduct.ToList().Adapt<List<ProductReadDto>>();
+            var Allprod = AllProduct.ToList();
 
             return Allprod;
         }
-        public void AddProduct(ProductReadDto productC)
+        public void AddProduct(Product product)
         {
-            Product product1 = productC.Adapt<Product>();
-            _context.Add(product1);
+            //Product product1 = productC.Adapt<Product>();
+            _context.Add(product);
 
         }
-        public void UpdateProduct(ProductUpdateDto productU)
+        public void UpdateProduct(Product product)
         {
-            Product product2 = productU.Adapt<Product>();
-            _context.Update(product2);
+            //Product product2 = productU.Adapt<Product>();
+            _context.Update(product);
         }
         public void DeleteProduct(Product product)
         {
+            //Product product = productt.Adapt<Product>();
+
             _context.Delete(product);
         }
         public int saveProduct()

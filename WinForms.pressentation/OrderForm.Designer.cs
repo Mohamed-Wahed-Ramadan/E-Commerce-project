@@ -38,37 +38,45 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(369, 21);
+            label1.BackColor = Color.Transparent;
+            label1.Font = new Font("Simplified Arabic Fixed", 18F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(169, 19);
             label1.Name = "label1";
-            label1.Size = new Size(71, 15);
+            label1.Size = new Size(177, 28);
             label1.TabIndex = 0;
             label1.Text = "Orders Bage";
             // 
             // dataGridView1
             // 
+            dataGridView1.BackgroundColor = SystemColors.ActiveCaption;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(6, 62);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(790, 334);
+            dataGridView1.Size = new Size(474, 169);
             dataGridView1.TabIndex = 1;
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(683, 408);
+            btnSave.BackColor = SystemColors.ButtonHighlight;
+            btnSave.Font = new Font("Simplified Arabic Fixed", 14.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            btnSave.Location = new Point(375, 245);
             btnSave.Name = "btnSave";
             btnSave.Size = new Size(105, 30);
             btnSave.TabIndex = 2;
             btnSave.Text = "Save";
-            btnSave.UseVisualStyleBackColor = true;
+            btnSave.UseVisualStyleBackColor = false;
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(12, 408);
+            btnBack.BackColor = SystemColors.ButtonHighlight;
+            btnBack.Font = new Font("Simplified Arabic Fixed", 14.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            btnBack.Location = new Point(6, 245);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(105, 30);
             btnBack.TabIndex = 3;
             btnBack.Text = "Back";
-            btnBack.UseVisualStyleBackColor = true;
+            btnBack.UseVisualStyleBackColor = false;
             btnBack.Click += btnBack_Click;
             // 
             // OrderForm
@@ -76,7 +84,8 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveBorder;
-            ClientSize = new Size(800, 450);
+            BackgroundImage = Properties.Resources.f22;
+            ClientSize = new Size(487, 287);
             Controls.Add(btnBack);
             Controls.Add(btnSave);
             Controls.Add(dataGridView1);

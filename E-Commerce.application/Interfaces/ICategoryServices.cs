@@ -12,11 +12,11 @@ namespace E_Commerce.application.Interfaces
 {
     public interface ICategoryServices
     {
-        List<CategoryReadDto>  GetAllCategory();
+        List<Category>  GetAllCategory();
 
-        void AddCategory(CategoryReadDto category);
+        void AddCategory(Category category);
 
-        void UpdateCategory(CategoryUpdateDto category);
+        void UpdateCategory(Category category);
 
 
         void DeleteCategory(Category category);

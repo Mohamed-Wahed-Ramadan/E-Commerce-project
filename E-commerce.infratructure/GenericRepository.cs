@@ -40,6 +40,7 @@ public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : Ba
     }
     public int Complete()
     {
+        var tt = _dbContext.ChangeTracker.Entries();
         return _dbContext.SaveChanges();
     }
     public async Task<int> CompleteAsync()
@@ -49,7 +50,7 @@ public class GenericRepository<T, TID> : IGenaricRepository<T, TID> where T : Ba
 
     public IQueryable<T> GetAll()
     {
-        return _dbSet;
+        return _dbSet.AsNoTracking();
     }
 
     public T? GetById(TID id)
