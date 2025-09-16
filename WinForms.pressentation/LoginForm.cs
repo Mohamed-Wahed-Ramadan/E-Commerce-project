@@ -33,7 +33,7 @@ namespace WinForms.pressentation
 
         private async void btnDone_Click(object sender, EventArgs e)
         {
-            if(txtEmail.Text == "admin" && txtPassword.Text == "admin")
+            if (txtEmail.Text == "admin" && txtPassword.Text == "admin")
             {
                 AdminForm adminform = new AdminForm();
                 this.Hide();
@@ -57,6 +57,11 @@ namespace WinForms.pressentation
                     }
                 }
             }
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
 
         }
     }

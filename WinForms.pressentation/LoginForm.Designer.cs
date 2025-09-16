@@ -39,76 +39,87 @@
             // 
             // txtEmail
             // 
-            txtEmail.Location = new Point(135, 108);
-            txtEmail.Margin = new Padding(3, 4, 3, 4);
+            txtEmail.Location = new Point(118, 81);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(354, 27);
+            txtEmail.Size = new Size(310, 23);
             txtEmail.TabIndex = 0;
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(135, 197);
-            txtPassword.Margin = new Padding(3, 4, 3, 4);
+            txtPassword.Location = new Point(118, 148);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
-            txtPassword.Size = new Size(354, 27);
+            txtPassword.Size = new Size(310, 23);
             txtPassword.TabIndex = 1;
             // 
             // btnDone
             // 
-            btnDone.Location = new Point(215, 307);
-            btnDone.Margin = new Padding(3, 4, 3, 4);
+            btnDone.BackColor = Color.White;
+            btnDone.Font = new Font("Simplified Arabic Fixed", 18F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            btnDone.Location = new Point(188, 230);
             btnDone.Name = "btnDone";
-            btnDone.Size = new Size(149, 47);
+            btnDone.Size = new Size(130, 35);
             btnDone.TabIndex = 3;
             btnDone.Text = "Login";
-            btnDone.UseVisualStyleBackColor = true;
+            btnDone.UseVisualStyleBackColor = false;
             btnDone.Click += btnDone_Click;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(63, 112);
+            label1.BackColor = Color.Transparent;
+            label1.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = SystemColors.ButtonHighlight;
+            label1.Location = new Point(30, 83);
             label1.Name = "label1";
-            label1.Size = new Size(46, 20);
+            label1.Size = new Size(53, 21);
             label1.TabIndex = 4;
             label1.Text = "Email";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(63, 201);
+            label2.BackColor = Color.Transparent;
+            label2.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label2.ForeColor = SystemColors.ButtonHighlight;
+            label2.Location = new Point(30, 150);
             label2.Name = "label2";
-            label2.Size = new Size(70, 20);
+            label2.Size = new Size(82, 21);
             label2.TabIndex = 5;
             label2.Text = "Password";
+            label2.Click += label2_Click;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(245, 28);
+            label3.BackColor = Color.Transparent;
+            label3.Font = new Font("Simplified Arabic Fixed", 27.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            label3.ForeColor = SystemColors.ButtonHighlight;
+            label3.Location = new Point(137, 9);
             label3.Name = "label3";
-            label3.Size = new Size(84, 20);
+            label3.Size = new Size(250, 45);
             label3.TabIndex = 6;
             label3.Text = "Login Bage";
             // 
             // btnBack
             // 
-            btnBack.Location = new Point(5, 8);
-            btnBack.Margin = new Padding(3, 4, 3, 4);
+            btnBack.BackColor = Color.White;
+            btnBack.Font = new Font("Simplified Arabic Fixed", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            btnBack.Location = new Point(4, 6);
             btnBack.Name = "btnBack";
-            btnBack.Size = new Size(86, 31);
+            btnBack.Size = new Size(75, 30);
             btnBack.TabIndex = 7;
             btnBack.Text = "Back";
-            btnBack.UseVisualStyleBackColor = true;
+            btnBack.UseVisualStyleBackColor = false;
             btnBack.Click += btnBack_Click;
             // 
             // LoginForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = SystemColors.ActiveBorder;
-            ClientSize = new Size(568, 409);
+            BackColor = SystemColors.ButtonHighlight;
+            BackgroundImage = Properties.Resources.f22;
+            ClientSize = new Size(487, 291);
             Controls.Add(btnBack);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -116,7 +127,6 @@
             Controls.Add(btnDone);
             Controls.Add(txtPassword);
             Controls.Add(txtEmail);
-            Margin = new Padding(3, 4, 3, 4);
             Name = "LoginForm";
             Text = "LoginForm";
             ResumeLayout(false);
