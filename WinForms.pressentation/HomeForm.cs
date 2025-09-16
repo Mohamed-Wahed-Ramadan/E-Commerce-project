@@ -36,8 +36,14 @@ namespace WinForms.pressentation
 
         }
         IProductServices _productServices;
+<<<<<<< HEAD
         List<ProductReadDto> ProductsList;
         BindingSource bindingSourceProduct;
+=======
+        List<Product> ProductsList;
+        List<Category> CategoriesList;
+        BindingSource bindingSource;
+>>>>>>> test
         private void btnCart_Click(object sender, EventArgs e)
         {
             CartForm cartForm = new CartForm();
@@ -59,6 +65,7 @@ namespace WinForms.pressentation
         private void LoadProduct()
         {
             ProductsList = _productServices.GetAllProduct();
+<<<<<<< HEAD
             bindingSourceProduct = new BindingSource(ProductsList, "");
             dataGridView1.DataSource = bindingSourceProduct;
             //dataGridView1.Columns[0].ReadOnly = true;
@@ -67,6 +74,16 @@ namespace WinForms.pressentation
             //    ProductReadDto newProductDTO = new ProductReadDto();
             //    e.NewObject = newProductDTO;
             //    _productServices.AddProduct(newProductDTO);
+=======
+            bindingSource = new BindingSource(ProductsList, "");
+            dataGridView1.DataSource = bindingSource;
+            dataGridView1.Columns[0].ReadOnly = true;
+            bindingSource.AddingNew += (sender, e) =>
+            {
+                Product newProductDTO = new Product();
+                e.NewObject = newProductDTO;
+                _productServices.AddProduct(newProductDTO);
+>>>>>>> test
 
             //};
             //dataGridView1.UserDeletingRow += (sender, e) =>

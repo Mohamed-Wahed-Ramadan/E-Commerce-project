@@ -31,6 +31,7 @@ namespace E_Commerce.Context.Configuration
                    .IsRequired()
                    .HasConversion<string>();
 
+<<<<<<< HEAD
          
              builder.HasData(
                     new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
@@ -38,6 +39,16 @@ namespace E_Commerce.Context.Configuration
                                 Role = UserRole.Admin, UserName = "admin" }
                 );
              
+=======
+            
+
+             //builder.HasData(
+             //       new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
+             //                   PasswordHash = "admin".GetHashCode().ToString(),
+             //                   Role = UserRole.Admin, UserName = "admin" }
+             //   );
+
+>>>>>>> test
 
 
 

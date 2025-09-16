@@ -15,11 +15,11 @@ namespace E_Commerce.application.Interfaces
     public interface IProductServices
     {
 
-         List<ProductReadDto> GetAllProduct();
+         List<Product> GetAllProduct();
 
-         void AddProduct(ProductReadDto product);
+         void AddProduct(Product product);
 
-         void UpdateProduct(ProductUpdateDto product);
+         void UpdateProduct(Product product);
        
        
          void DeleteProduct(Product product);

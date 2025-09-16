@@ -1,15 +1,7 @@
 ﻿using Autofac;
-using E_commerce.infratructure;
-using E_Commerce.application.Contracts;
 using E_Commerce.application.Interfaces;
 using E_Commerce.application.Mapper;
-using E_Commerce.application.Repository;
-using E_Commerce.application.Services;
-using E_Commerce.Context;
-using E_Commerce.DTOs.Cart;
-using E_Commerce.DTOs.Category;
 using E_Commerce.DTOs.CategoryDtos;
-using E_Commerce.DTOs.Product;
 using E_Commerce.DTOs.ProductDtos;
 using E_Commerce_project.models;
 using System.Windows.Forms;
@@ -23,13 +15,39 @@ namespace WinForms.pressentation
             bindingSourceCategory = new BindingSource(CategoriesList, "");
             dataGridViewCat.DataSource = bindingSourceCategory;
             dataGridViewCat.Columns[0].ReadOnly = true;
+            #region MyRegion
+            //bindingSourceCategory.AddingNew += (sender, e) =>
+            //{
+            //    CategoryReadDto newCategoryDTO = new CategoryReadDto();
+
+            //    if (e.NewObject is CategoryReadDto newCategoryDTOS)
+            //    {
+            //        _icategoryService.AddCategory(newCategoryDTOS);
+            //    }
+            //}; 
+            #endregion
+
             bindingSourceCategory.AddingNew += (sender, e) =>
             {
-                CategoryReadDto newCategoryDTO = new CategoryReadDto();
+                Category newCategoryDTO = new Category();
                 e.NewObject = newCategoryDTO;
-                _icategoryService.AddCategory(newCategoryDTO);
+                //_icategoryService.AddCategory(newCategoryDTO);
 
             };
+            dataGridViewCat.CellValueChanged += (sender, e) =>
+            {
+                var catObj = dataGridViewCat.Rows[e.RowIndex].DataBoundItem;
+
+                if (catObj is Category category) 
+                {
+                    if (category.Id > 0) 
+                    {
+                        _icategoryService.UpdateCategory(category);
+                    }
+                   
+                }
+            };
+
             dataGridViewCat.UserDeletingRow += (sender, e) =>
             {
                 if (e.Row.DataBoundItem is Category deletedCat)
@@ -45,13 +63,38 @@ namespace WinForms.pressentation
             bindingSourceProduct = new BindingSource(ProductsList, "");
             dataGridViewPro.DataSource = bindingSourceProduct;
             dataGridViewPro.Columns[0].ReadOnly = true;
+            #region MyRegion
+            //bindingSourceProduct.AddingNew += (sender, e) =>
+            //{
+            //    ProductReadDto newProductDTO = new ProductReadDto();
+
+            //    if (e.NewObject is ProductReadDto newProductDTOs)
+            //    {
+            //        _productServices.AddProduct(newProductDTOs);
+            //    }
+            //}; 
+            #endregion
             bindingSourceProduct.AddingNew += (sender, e) =>
             {
-                ProductReadDto newProductDTO = new ProductReadDto();
+                Product  newProductDTO = new Product();
                 e.NewObject = newProductDTO;
-                _productServices.AddProduct(newProductDTO);
+                //_productServices.AddProduct(newProductDTO);
 
             };
+            dataGridViewPro.CellValueChanged += (sender, e) =>
+            {
+                var proObj = dataGridViewPro.Rows[e.RowIndex].DataBoundItem;
+
+                if (proObj is Product product)
+                {
+                    if (product.Id > 0)
+                    {
+                        _productServices.UpdateProduct(product);
+                    }
+                    
+                }
+            };
+
             dataGridViewPro.UserDeletingRow += (sender, e) =>
             {
                 if (e.Row.DataBoundItem is Product deletedPro)
@@ -65,11 +108,14 @@ namespace WinForms.pressentation
         {
 
             InitializeComponent();
+            
             MapsterConfigCategory.RegisterMapsterConfiguration();
+            #region MyRegion
             //AppDbContext appDbContext = new AppDbContext();
             //ICategoryRepository categoryRepository = new CategoryRepository(appDbContext);
             //IGenaricRepository<Category, int> categoryRepositories = new GenericRepository<Category, int>(appDbContext);
-            //_icategoryService = new CategoryService(categoryRepositories);
+            //_icategoryService = new CategoryService(categoryRepositories); 
+            #endregion
             var builder = Autofac.Inject();
             _icategoryService = builder.Resolve<ICategoryServices>();
             _productServices = builder.Resolve<IProductServices>();
@@ -81,8 +127,8 @@ namespace WinForms.pressentation
 
         ICategoryServices _icategoryService;
         IProductServices _productServices;
-        List<ProductReadDto> ProductsList;
-        List<CategoryReadDto> CategoriesList;
+        List<Product> ProductsList;
+        List<Category> CategoriesList;
         BindingSource bindingSourceProduct;
         BindingSource bindingSourceCategory;
         private void btnBack_Click(object sender, EventArgs e)
@@ -146,6 +192,33 @@ namespace WinForms.pressentation
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            foreach (Category cat in bindingSourceCategory.List)
+            {
+                if (string.IsNullOrWhiteSpace(cat.Name))
+                {
+                    MessageBox.Show("Category Name cannot be empty.");
+                    continue;
+                }
+
+                if (cat.Id > 0)
+                    _icategoryService.UpdateCategory(cat);
+                else
+                    _icategoryService.AddCategory(cat);
+            }
+            foreach (Product pro in bindingSourceProduct.List)
+            {
+                if (string.IsNullOrWhiteSpace(pro.Name))
+                {
+                    MessageBox.Show("Category Name cannot be empty.");
+                    continue;
+                }
+
+                if (pro.Id > 0)
+                    _productServices.UpdateProduct(pro);
+                else
+                    _productServices.AddProduct(pro);
+            }
+
 
             int C = _icategoryService.SaveCategory();
             int P = _productServices.saveProduct();
