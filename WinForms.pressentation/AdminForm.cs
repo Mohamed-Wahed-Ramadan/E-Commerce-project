@@ -151,5 +151,10 @@ namespace WinForms.pressentation
             int P = _productServices.saveProduct();
 
         }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

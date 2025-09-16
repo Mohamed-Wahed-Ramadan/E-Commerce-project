@@ -21,8 +21,6 @@ namespace WinForms.pressentation
     public partial class HomeForm : Form
     {
 
-        private readonly ProductService _productService;
-        private readonly CartProServices _cartService;
 
         public HomeForm()
         {
@@ -33,15 +31,13 @@ namespace WinForms.pressentation
             //IGenaricRepository<Category, int> categoryRepositories = new GenericRepository<Category, int>(appDbContext);
             //_icategoryService = new CategoryService(categoryRepositories);
             var builder = Autofac.Inject();
-            _icategoryService = builder.Resolve<ICategoryServices>();
             _productServices = builder.Resolve<IProductServices>();
-        }
+            LoadProduct();
 
-        ICategoryServices _icategoryService;
+        }
         IProductServices _productServices;
         List<ProductReadDto> ProductsList;
-        List<CategoryReadDto> CategoriesList;
-        BindingSource bindingSource;
+        BindingSource bindingSourceProduct;
         private void btnCart_Click(object sender, EventArgs e)
         {
             CartForm cartForm = new CartForm();
@@ -59,27 +55,29 @@ namespace WinForms.pressentation
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+        private void LoadProduct()
+        {
             ProductsList = _productServices.GetAllProduct();
-            bindingSource = new BindingSource(ProductsList, "");
-            dataGridView1.DataSource = bindingSource;
-            dataGridView1.Columns[0].ReadOnly = true;
-            bindingSource.AddingNew += (sender, e) =>
-            {
-                ProductCreateDto newProductDTO = new ProductCreateDto();
-                e.NewObject = newProductDTO;
-                _productServices.AddProduct(newProductDTO);
+            bindingSourceProduct = new BindingSource(ProductsList, "");
+            dataGridView1.DataSource = bindingSourceProduct;
+            //dataGridView1.Columns[0].ReadOnly = true;
+            //bindingSourceProduct.AddingNew += (sender, e) =>
+            //{
+            //    ProductReadDto newProductDTO = new ProductReadDto();
+            //    e.NewObject = newProductDTO;
+            //    _productServices.AddProduct(newProductDTO);
 
-            };
-            dataGridView1.UserDeletingRow += (sender, e) =>
-            {
-                if (e.Row.DataBoundItem is Product deletedPro)
-                {
-                    _productServices.DeleteProduct(deletedPro);
-                }
-            };
+            //};
+            //dataGridView1.UserDeletingRow += (sender, e) =>
+            //{
+            //    if (e.Row.DataBoundItem is Product deletedPro)
+            //    {
+            //        _productServices.DeleteProduct(deletedPro);
+            //    }
+            //};
 
         }
-       
 
     }
 }
