@@ -2,6 +2,7 @@
 {
     public class Connections
     {
-            public const string DataSource = "Data Source=.;Initial Catalog=ECommerceStore;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
-            }
+            //public const string DataSource = "Data Source=.;Initial Catalog=ECommerceStore;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False";
+            public const string DataSource = "server=.; database=ECommerceStore; trusted_connection=true; encrypt=false";
+    }
 }

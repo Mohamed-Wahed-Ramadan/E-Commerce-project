@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application.Services
 {
-    internal class ProductsOrderSarvices: IProductsOrderServices
+    public class ProductsOrderSarvices: IProductsOrderServices
     {
         IProdsOrderRepository _proOrderRepo;
 

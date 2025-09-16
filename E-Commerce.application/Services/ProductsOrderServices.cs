@@ -9,18 +9,17 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application.Services
 {
-    public class CartProductServices: ICartProServices
+    internal class ProductsOrderServices : IProductsOrderServices
     {
-        ICartProRepository _cartProRepo;
-
-        public void AddCartProduct(Product pro)
+        IProdsOrderRepository _prodsOrderRepo;
+        public void AddProductsOrder(Cart cart)
         {
-            _cartProRepo.AddCartProduct(pro);
+            _prodsOrderRepo.AddProductsOrder(cart);
         }
 
         public void Save()
         {
-            _cartProRepo.Save();
+            _prodsOrderRepo.Save();
         }
     }
 }

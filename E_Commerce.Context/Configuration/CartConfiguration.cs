@@ -9,13 +9,20 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Context.Configuration
 {
-    internal class CartConfiguration : IEntityTypeConfiguration<Cart>
+    public class CartConfiguration :IEntityTypeConfiguration<Cart>
     {
+        
+
         public void Configure(EntityTypeBuilder<Cart> builder)
         {
-           builder.HasKey(c=> c.Id);
-           builder.HasMany(c=> c.CartProducts).WithOne(cp=> cp.Cart).HasForeignKey(cp=> cp.CartId);
+            builder.HasKey(c => c.Id);
+            builder.HasMany(c => c.CartProducts)
+                   .WithOne(cp => cp.Cart)
+                   .HasForeignKey(cp => cp.CartId);
 
+            builder.HasOne(c => c.User)
+                   .WithMany(u => u.Carts)
+                   .HasForeignKey(c => c.UserId);
         }
     }
 }

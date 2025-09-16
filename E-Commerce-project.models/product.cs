@@ -20,12 +20,15 @@ namespace E_Commerce_project.models
         public decimal Price { get; set; }
         public int? CategoryId { get; set; }
         public Category Category { get; set; }
+        
         [MaxLength(600)]
-
         public string? ImagePath { get; set; }
         [Required]
         public int StockQuantity { get; set; }
-        public List<ProductOrder> ProductOrder { get; set; }
-        public List<CartProduct> CartProducts { get; set; }
+        
+        //public List<CartProduct> CartProducts { get; set; }
+        //public List<ProductOrder> ProductOrders { get; set; }
+
+
     }
 }

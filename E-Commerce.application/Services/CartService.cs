@@ -14,24 +14,24 @@ namespace E_Commerce.application.Services
     {
         ICartRepository _cartRepo;
 
-        public List<Cart> GetAllCarts()
-        {
-            return _cartRepo.GetAllCarts();
-        }
-
         public void AddCart(Cart cart)
         {
             _cartRepo.AddCart(cart);
         }
 
-        public void DelecCart(Cart cart)
+        public void CalculatTotalPrice()
+        {
+            _cartRepo.CalculatTotalPrice();
+        }
+
+        public void DelectCart(Cart cart)
         {
             _cartRepo.DelectCart(cart);
         }
 
-        public void TotalOrderPrice()
+        public List<Cart> GetAllCarts()
         {
-            _cartRepo.CalculatTotalPrice();
+            return _cartRepo.GetAllCarts();
         }
 
         public void Save()

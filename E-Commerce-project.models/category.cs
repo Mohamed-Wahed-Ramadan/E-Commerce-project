@@ -14,7 +14,7 @@ namespace E_Commerce_project.models
         [Required, MaxLength(100)]
         public string Name { get; set; }
         [MaxLength(600)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public List<Product> Products { get; set; }
 
 

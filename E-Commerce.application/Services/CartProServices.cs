@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application.Services
 {
-    public class CartProductServices: ICartProServices
+    public class CartProServices : ICartProServices
     {
         ICartProRepository _cartProRepo;
-
         public void AddCartProduct(Product pro)
         {
             _cartProRepo.AddCartProduct(pro);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce_project.models
 {
-  public  class CartProduct
+  public  class CartProduct : BaseModel<int>
     {   
         public int CartId { get; set; }
         public Cart Cart { get; set; }

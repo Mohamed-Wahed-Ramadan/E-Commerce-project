@@ -11,6 +11,5 @@ namespace E_Commerce.application.Interfaces
     {
         public void AddCartProduct(Product pro);
         public void Save();
-        
     }
 }

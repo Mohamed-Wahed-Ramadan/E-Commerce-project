@@ -13,5 +13,9 @@ namespace E_Commerce_project.models.User
         public string Email { get; set; }
         public string FullName { get; set; }
         public UserRole Role { get; init; } = UserRole.Customer;
+        public ICollection<Order> Orders { get; set; }
+
+        public ICollection<Cart> Carts { get; set; }
+
     }
 }

@@ -9,15 +9,20 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.Context.Configuration
 {
-    internal class OrderConfiguration : IEntityTypeConfiguration<Order>
+    internal class OrderConfiguration :IEntityTypeConfiguration<Order>
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasKey(o => o.Id);
-            builder.HasMany(o => o.ProductOrders).WithOne(op => op.Order).HasForeignKey(op => op.OrderId);
-            builder.Property(o => o.OrderDate).IsRequired();
+            builder.HasKey(o=> o.Id);
+            builder.HasMany(o => o.ProductOrders).WithOne(po=> po.Order).HasForeignKey(po=> po.OrderId);
             builder.Property(o => o.OrderTotalPrice).IsRequired();
+            builder.Property(o => o.OrderDate).IsRequired();
 
+            builder.HasOne(o => o.User)
+                   .WithMany(u => u.Orders)
+                   .HasForeignKey(o => o.UserId);
         }
+
+        
     }
 }

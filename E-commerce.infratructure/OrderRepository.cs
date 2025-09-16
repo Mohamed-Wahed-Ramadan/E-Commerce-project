@@ -9,28 +9,28 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository : GenericRepository<Order, int>, IOrderRepository
     {
         AppDbContext _context;
-        public OrderRepository(AppDbContext context)
+        public OrderRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
 
         public List<Order> GetAllOrders()
         {
-            return _context.orders.ToList();
+            return _context.Orders.ToList();
         }
 
         public void AddOrder(Cart cart, int orderId)
         {
 
-            _context.orders.Add(
+            _context.Orders.Add(
                 new Order
                 {
                     Id = orderId,
                     OrderDate = DateTime.Now,
-                    User = cart.User,
+                    //User = cart.user,
                     OrderTotalPrice = cart.OrderTotalPrice
                 }
                 );
@@ -39,7 +39,7 @@ namespace E_commerce.infratructure
 
         public void DeletOrder(Order order)
         {
-            _context.orders.Remove(order);
+            _context.Orders.Remove(order);
         }
 
         public void Save()

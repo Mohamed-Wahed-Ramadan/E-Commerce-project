@@ -9,13 +9,14 @@ namespace E_Commerce.application.Contracts
 {
     public interface IGenaricRepository<T, TId>
     {
-        public void Update(T entity);
-        public void Delete(T entity);
 
         Task<IEnumerable<T>> GetAllAsync();
+        IQueryable<T> GetAll();
         Task<T?> GetByIdAsync(TId id);
+        T? GetById(TId id);
         void Add(T entity);
-        
-        Task<int> CompleteAsync();
+        void Update(T entity); 
+        void Delete(T entity);
+        int CompleteAsync();
     }
 }

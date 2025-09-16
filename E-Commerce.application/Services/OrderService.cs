@@ -14,14 +14,9 @@ namespace E_Commerce.application.Services
     {
         IOrderRepository _orderRepo;
 
-        public List<Order> GetAllOrders()
+        public void AddOrder(Cart cart, int orderId)
         {
-           return _orderRepo.GetAllOrders();
-        }
-
-        public void AddOrder(Cart order, int orderId)
-        {
-            _orderRepo.AddOrder(order, orderId);
+            _orderRepo.AddOrder(cart,orderId);
         }
 
         public void DeletOrder(Order order)
@@ -29,10 +24,14 @@ namespace E_Commerce.application.Services
             _orderRepo.DeletOrder(order);
         }
 
+        public List<Order> GetAllOrders()
+        {
+           return _orderRepo.GetAllOrders();
+        }
+
         public void Save()
         {
             _orderRepo.Save();
         }
-
     }
 }

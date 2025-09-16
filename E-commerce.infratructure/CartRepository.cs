@@ -9,21 +9,21 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    public class CartRepository : ICartRepository
+    public class CartRepository : GenericRepository<Cart, int>, ICartRepository
     {
         AppDbContext _context;
-        public CartRepository(AppDbContext context)
+        public CartRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
 
         public List<Cart> GetAllCarts()
         {
-            return _context.carts.ToList();
+            return _context.Carts.ToList();
         }
         public void CalculatTotalPrice()
         {
-            foreach(var cart in _context.carts)
+            foreach(var cart in _context.Carts)
             {
                 var productsPrice = 0m;
                 foreach(var product in cart.CartProducts )
@@ -37,11 +37,11 @@ namespace E_commerce.infratructure
         }
         public void AddCart(Cart cart)
         {
-            _context.carts.Add(cart);
+            _context.Carts.Add(cart);
         }
         public void DelectCart(Cart cart)
         {
-            _context.carts.Remove(cart);
+            _context.Carts.Remove(cart);
         }
 
         public void Save()

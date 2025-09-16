@@ -11,7 +11,9 @@ namespace E_Commerce.application.Repository
     public interface IUserRepository : IGenaricRepository<User,int>
     {
         public Task<User?> GetUserByEmailAsync(string email);
-        public Task<User?> GetUserByUsernameAsync(string username);
+        public Task<User?> GetUserByUserNameAsync(string username);
+        public User? GetUserByEmail(string email);
+        public User? GetUserByUserName(string username);
         public bool SignIn(User user, string password);
 
         bool IsValidEmail(string email);
