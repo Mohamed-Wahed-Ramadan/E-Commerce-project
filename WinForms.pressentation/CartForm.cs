@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 ﻿using Autofac;
 using E_Commerce.application.Interfaces;
 using E_Commerce.application.Services;
 using E_Commerce_project.models;
+=======
+﻿using E_Commerce.DTOs.User;
+>>>>>>> 8eb9597a3720c8c9881c5e005aeebf1ccd7c8ce7
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +21,7 @@ namespace WinForms.pressentation
     public partial class CartForm : Form
 
     {
+<<<<<<< HEAD
         private void LoadCard()
         {
             CartList = _CartServices.GetAllCarts();
@@ -71,6 +76,14 @@ namespace WinForms.pressentation
             _CartServices = builder.Resolve<ICartServices>();
             LoadCard();
 
+=======
+        private readonly UserResponse _user;
+
+        public CartForm(UserResponse user)
+        {
+            InitializeComponent();
+            this._user = user;
+>>>>>>> 8eb9597a3720c8c9881c5e005aeebf1ccd7c8ce7
         }
         ICartServices _CartServices;
         List<Cart> CartList;
@@ -78,13 +91,14 @@ namespace WinForms.pressentation
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            HomeForm homeForm = new HomeForm();
+            HomeForm homeForm = new HomeForm(_user);
             this.Hide();
             homeForm.Show();
         }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+<<<<<<< HEAD
             foreach (Cart pro in bindingSourceCart.List)
             {
                 if (string.IsNullOrWhiteSpace(pro.User.FullName))
@@ -104,6 +118,9 @@ namespace WinForms.pressentation
             _CartServices.Save();
 
 
+=======
+            
+>>>>>>> 8eb9597a3720c8c9881c5e005aeebf1ccd7c8ce7
         }
 
         private void btnConf_Click(object sender, EventArgs e)

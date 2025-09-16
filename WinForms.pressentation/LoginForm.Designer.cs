@@ -87,7 +87,7 @@
             label2.Size = new Size(82, 21);
             label2.TabIndex = 5;
             label2.Text = "Password";
-            label2.Click += label2_Click;
+            //label2.Click += label2_Click;
             // 
             // label3
             // 
@@ -128,6 +128,7 @@
             Controls.Add(txtPassword);
             Controls.Add(txtEmail);
             Name = "LoginForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginForm";
             ResumeLayout(false);
             PerformLayout();

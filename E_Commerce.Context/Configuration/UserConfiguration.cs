@@ -23,23 +23,20 @@ namespace E_Commerce.Context.Configuration
             builder.Property(u => u.Email)
                    .IsRequired()
                    .HasMaxLength(300);
-            builder.Property(u => u.Email)
-                   .IsRequired()
-                   .HasMaxLength(300);
+
+            builder.HasIndex(u => u.Email).IsUnique();
 
             builder.Property(u => u.Role)
                    .IsRequired()
                    .HasConversion<string>();
 
-
-            
-
-             //builder.HasData(
-             //       new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-             //                   PasswordHash = "admin".GetHashCode().ToString(),
-             //                   Role = UserRole.Admin, UserName = "admin" }
-             //   );
-
+         
+             builder.HasData(
+                    new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
+                                PasswordHash = "$2a$11$Wbohky2NKsjWWV/KMuC5feaR5IuYg4mU.7ToAsnxNPfdTFzlktudS",
+                                Role = UserRole.Admin, UserName = "admin" }
+                );
+             
 
 
 

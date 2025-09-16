@@ -1,4 +1,5 @@
-﻿using System;
+﻿using E_Commerce.DTOs.User;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,14 +13,17 @@ namespace WinForms.pressentation
 {
     public partial class OrderForm : Form
     {
-        public OrderForm()
+        private readonly UserResponse _user;
+
+        public OrderForm(UserResponse user)
         {
             InitializeComponent();
+            _user = user;
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
-            HomeForm homeForm = new HomeForm();
+            HomeForm homeForm = new HomeForm(_user);
             this.Hide();
             homeForm.Show();
         }

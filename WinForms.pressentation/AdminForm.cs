@@ -3,12 +3,42 @@ using E_Commerce.application.Interfaces;
 using E_Commerce.application.Mapper;
 using E_Commerce.DTOs.CategoryDtos;
 using E_Commerce.DTOs.ProductDtos;
+using E_Commerce.DTOs.User;
 using E_Commerce_project.models;
 using System.Windows.Forms;
 namespace WinForms.pressentation
 {
     public partial class AdminForm : Form
     {
+        ICategoryServices _icategoryService;
+        IProductServices _productServices;
+        List<Product> ProductsList;
+        List<Category> CategoriesList;
+        BindingSource bindingSourceProduct;
+        BindingSource bindingSourceCategory;
+        private readonly UserResponse _user;
+        public AdminForm(UserResponse? user)
+        {
+
+            InitializeComponent();
+            
+            MapsterConfigCategory.RegisterMapsterConfiguration();
+            #region MyRegion
+            //AppDbContext appDbContext = new AppDbContext();
+            //ICategoryRepository categoryRepository = new CategoryRepository(appDbContext);
+            //IGenaricRepository<Category, int> categoryRepositories = new GenericRepository<Category, int>(appDbContext);
+            //_icategoryService = new CategoryService(categoryRepositories); 
+            #endregion
+            var builder = Autofac.Inject();
+            _icategoryService = builder.Resolve<ICategoryServices>();
+            _productServices = builder.Resolve<IProductServices>();
+            LoadCategory();
+            LoadProduct();
+
+
+
+            _user = user;
+        }
         private void LoadCategory()
         {
             CategoriesList = _icategoryService.GetAllCategory();
@@ -104,36 +134,11 @@ namespace WinForms.pressentation
             };
 
         }
-        public AdminForm()
-        {
-
-            InitializeComponent();
-            
-            MapsterConfigCategory.RegisterMapsterConfiguration();
-            #region MyRegion
-            //AppDbContext appDbContext = new AppDbContext();
-            //ICategoryRepository categoryRepository = new CategoryRepository(appDbContext);
-            //IGenaricRepository<Category, int> categoryRepositories = new GenericRepository<Category, int>(appDbContext);
-            //_icategoryService = new CategoryService(categoryRepositories); 
-            #endregion
-            var builder = Autofac.Inject();
-            _icategoryService = builder.Resolve<ICategoryServices>();
-            _productServices = builder.Resolve<IProductServices>();
-            LoadCategory();
-            LoadProduct();
 
 
-        }
-
-        ICategoryServices _icategoryService;
-        IProductServices _productServices;
-        List<Product> ProductsList;
-        List<Category> CategoriesList;
-        BindingSource bindingSourceProduct;
-        BindingSource bindingSourceCategory;
         private void btnBack_Click(object sender, EventArgs e)
         {
-            HomeForm homeForm = new HomeForm();
+            HomeForm homeForm = new HomeForm(_user);
             this.Hide();
             homeForm.Show();
         }
