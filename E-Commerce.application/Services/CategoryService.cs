@@ -23,40 +23,41 @@ namespace E_Commerce.application.Services
         {
             _context = context;
         }
-        public List<CategoryReadDto> GetAllCategory()
+        public List<Category> GetAllCategory()
         {
             IQueryable<Category> AllCategoty = _context.GetAll();
-            var AllCats= AllCategoty.Where(a=> a.Products.Count > 0).ToList().Adapt<List<CategoryReadDto>>();
-            
+            var AllCats = AllCategoty.Where(a => a.Products.Count > 0).ToList();
             return AllCats;
         }
-        public void AddCategory(CategoryReadDto Creatcategory) 
+        public void AddCategory(Category category) 
         {
             //Category category = new Category()
             //{
             //    Name = Creatcategory.Name
             //};
-            Category category = Creatcategory.Adapt<Category>();
+            //Category category = Creatcategory.Adapt<Category>();
 
             _context.Add(category);
 
         }
-        public void UpdateCategory(CategoryUpdateDto Updatecategory) 
+        public void UpdateCategory(Category category) 
         {
             //Category category = new Category()
             //{
             //    Id=Updatecategory.Id,
             //    Name = Updatecategory.Name,
             //};
-            Category category = Updatecategory.Adapt<Category>();
+            //Category category = Updatecategory.Adapt<Category>();
             _context.Update(category);
         }
         public void DeleteCategory(Category category) 
         {
+            //Category categoryy = category.Adapt<Category>();
             _context.Delete(category);
         }
         public int SaveCategory() 
         {
+            
             return _context.CompleteAsync();
         }
 

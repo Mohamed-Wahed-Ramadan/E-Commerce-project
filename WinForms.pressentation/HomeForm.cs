@@ -39,8 +39,8 @@ namespace WinForms.pressentation
 
         ICategoryServices _icategoryService;
         IProductServices _productServices;
-        List<ProductReadDto> ProductsList;
-        List<CategoryReadDto> CategoriesList;
+        List<Product> ProductsList;
+        List<Category> CategoriesList;
         BindingSource bindingSource;
         private void btnCart_Click(object sender, EventArgs e)
         {
@@ -65,7 +65,7 @@ namespace WinForms.pressentation
             dataGridView1.Columns[0].ReadOnly = true;
             bindingSource.AddingNew += (sender, e) =>
             {
-                ProductCreateDto newProductDTO = new ProductCreateDto();
+                Product newProductDTO = new Product();
                 e.NewObject = newProductDTO;
                 _productServices.AddProduct(newProductDTO);
 

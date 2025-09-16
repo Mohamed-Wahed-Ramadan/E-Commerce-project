@@ -10,8 +10,8 @@ namespace E_Commerce_project.models
 {
     public class Product : BaseModel<int>
     {
-        //[Key]
-        //public int Id { get; set; }
+        [Key]
+        public int Id { get; set; }
         [Required, MaxLength(100)]
         public string Name { get; set; }
         [MaxLength(600)]
