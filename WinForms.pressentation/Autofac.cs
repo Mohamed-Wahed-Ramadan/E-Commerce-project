@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using E_commerce.infratructure;
+using E_commerce.infratructure;
 using E_Commerce.application.Contracts;
 using E_Commerce.application.Interfaces;
 using E_Commerce.application.Repository;

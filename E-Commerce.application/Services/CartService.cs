@@ -33,6 +33,10 @@ namespace E_Commerce.application.Services
         {
             return _cartRepo.GetAllCarts();
         }
+        public void UpdateCard(Cart cart) 
+        {
+            _cartRepo.UpdateCard(cart);
+        }
 
         public void Save()
         {

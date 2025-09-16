@@ -39,6 +39,10 @@ namespace E_commerce.infratructure
         {
             _context.Carts.Add(cart);
         }
+        public void UpdateCard(Cart cart)
+        {
+            _context.Carts.Update(cart);
+        }
         public void DelectCart(Cart cart)
         {
             _context.Carts.Remove(cart);
