@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    internal class ProdsOrderRepository: IProdsOrderRepository
+    public class ProdsOrderRepository: GenericRepository<Product, int>, IProdsOrderRepository
     {
         AppDbContext _context;
-        public ProdsOrderRepository(AppDbContext context)
+        public ProdsOrderRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }

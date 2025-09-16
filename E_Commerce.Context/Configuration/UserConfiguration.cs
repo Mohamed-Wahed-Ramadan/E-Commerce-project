@@ -31,15 +31,7 @@ namespace E_Commerce.Context.Configuration
                    .IsRequired()
                    .HasConversion<string>();
 
-<<<<<<< HEAD
-         
-             builder.HasData(
-                    new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-                                PasswordHash = Crypt.HashPassword("admin"),
-                                Role = UserRole.Admin, UserName = "admin" }
-                );
-             
-=======
+
             
 
              //builder.HasData(
@@ -48,7 +40,6 @@ namespace E_Commerce.Context.Configuration
              //                   Role = UserRole.Admin, UserName = "admin" }
              //   );
 
->>>>>>> test
 
 
 

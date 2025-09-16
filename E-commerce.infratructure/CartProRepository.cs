@@ -9,22 +9,31 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    internal class CartProRepository: ICartProRepository
+    public  class CartProRepository: GenericRepository<CartProduct, int>, ICartProRepository
     {
         AppDbContext _context;
-        public CartProRepository(AppDbContext context)
+        public CartProRepository(AppDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public void AddCartProduct(Product pro )
+        public void AddCartProduct(Product pro)
         {
-            _context.CartProducts.Add(
+            var cartProduct = _context.CartProducts.FirstOrDefault(cp => cp.ProductId == pro.Id);
+            if (cartProduct == null)
+            {
+                _context.CartProducts.Add(
                 new CartProduct
                 {
                     ProductId = pro.Id,
                     Quantity = 1
-                } );
+                });
+            }
+            else
+            {
+                cartProduct.Quantity++;
+            }
+                
         }
 
 
