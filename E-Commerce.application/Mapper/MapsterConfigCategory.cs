@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace E_Commerce.application.Mapper
 {
-    public class MapsterConfigCategory
+    public static class MapsterConfigCategory
     {
         public static void RegisterMapsterConfiguration()
         {

@@ -15,7 +15,7 @@ namespace E_Commerce_project.models
         public DateTime OrderDate { get; set; }
         public DateTime? ReceiptDate { get; set; }
         public int UserId { get; set; }
-        public User.User User { get; set; }
+        public User.User user { get; set; }
         public List<ProductOrder> ProductOrders { get; set; }
 
     }

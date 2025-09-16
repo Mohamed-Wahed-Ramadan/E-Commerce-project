@@ -31,13 +31,15 @@ namespace E_Commerce.Context.Configuration
                    .IsRequired()
                    .HasConversion<string>();
 
-         
-             builder.HasData(
-                    new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-                                PasswordHash = Crypt.HashPassword("admin"),
-                                Role = UserRole.Admin, UserName = "admin" }
-                );
-             
+
+            
+
+             //builder.HasData(
+             //       new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
+             //                   PasswordHash = "admin".GetHashCode().ToString(),
+             //                   Role = UserRole.Admin, UserName = "admin" }
+             //   );
+
 
 
 
