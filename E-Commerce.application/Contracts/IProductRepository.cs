@@ -10,6 +10,7 @@ namespace E_Commerce.application.Repository
     public interface IProductRepository
     {
         public IQueryable<Product> GetAll();
+        public Product GetById(int id);
         public void Create(Product product );
         public void Update(Product product );
         public void Delete(Product product );

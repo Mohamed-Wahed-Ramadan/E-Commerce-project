@@ -1,6 +1,7 @@
 ﻿using E_Commerce.application.Repository;
 using E_Commerce.Context;
 using E_Commerce_project.models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,44 +10,72 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    public class CartRepository : GenericRepository<Cart, int>, ICartRepository
+    public class CartRepository : ICartRepository
     {
         AppDbContext _context;
-        public CartRepository(AppDbContext context) : base(context)
+        public CartRepository(AppDbContext context) 
         {
             _context = context;
         }
 
-        public List<Cart> GetAllCarts()
+        public void AddProductToCart(int cartId, int productId, int quantity)
         {
-            return _context.Carts.ToList();
-        }
-        public void CalculatTotalPrice()
-        {
-            foreach(var cart in _context.Carts)
+            _context.CartProducts.Add(new CartProduct
             {
-                var productsPrice = 0m;
-                foreach(var product in cart.CartProducts )
-                {
-                    productsPrice += product.Quantity * product.Product.Price;
-                }
-                cart.OrderTotalPrice = productsPrice;
-
-            }
-
+                CartId = cartId,
+                ProductId = productId,
+                Quantity = quantity
+            });
         }
-        public void AddCart(Cart cart)
+
+        public Cart CreateOrUpdateCart(int userId)
         {
+            var cart = GetCartByUserId(userId);
+            cart ??= new Cart
+                {
+                    UserId = userId,
+                    OrderTotalPrice = 0,
+                    CartProducts = new List<CartProduct>()
+                };
             _context.Carts.Add(cart);
+            Save();
+            return cart;
         }
-        public void DelectCart(Cart cart)
+
+        public void DeleteAllUserCarts(int usrId)
+        {
+            var carts = _context.Carts.Where(c => c.UserId == usrId).ToList();
+            foreach (var cart in carts)
+            {
+                _context.Carts.Remove(cart);
+            }
+        }
+
+        public void DeleteCart(Cart cart)
         {
             _context.Carts.Remove(cart);
         }
 
-        public void Save()
+        public Cart? GetCartByUserId(int userId)
         {
-            _context.SaveChanges();
+            try
+            {
+                return _context.Carts.Where(c => c.UserId == userId)
+                                     .Include(c => c.User)
+                                     .Include(c => c.CartProducts)
+                                     .ThenInclude(cp => cp.Product)
+                                     .SingleOrDefault();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
+        public int Save()
+        {
+            return _context.SaveChanges();
         }
         
     }

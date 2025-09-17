@@ -9,11 +9,11 @@ namespace E_Commerce.application.Repository
 {
     public interface IOrderRepository
     {
-        public List<Order> GetAllOrders();
-        public void AddOrder(Cart cart, int orderId);
+        //public List<Order> GetAllOrders();
+        //public void AddOrder(Cart cart, int orderId);
 
-        public void DeletOrder(Order order);
-        public void Save();
+        //public void DeletOrder(Order order);
+        //public void Save();
 
     }
 }

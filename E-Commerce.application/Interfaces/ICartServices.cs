@@ -10,10 +10,12 @@ namespace E_Commerce.application.Interfaces
 {
     public interface ICartServices
     {
-        public List<Cart> GetAllCarts();
-        public void CalculatTotalPrice();
-        public void AddCart(Cart cart);
-        public void DelectCart(Cart cart);
-        public void Save();
+        //public List<Cart> GetAllCarts();
+        //public void CalculatTotalPrice();
+        public Cart GetCartByUserId(int userId);
+        public Cart AddProductToCart(int userId, int productId, int quantity);
+        //public void CreateOrUpdateCart(int userId);
+        public void DeleteCart(Cart cart);
+        public int Save();
     }
 }

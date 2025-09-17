@@ -10,8 +10,11 @@ namespace E_Commerce.application.Interfaces
 {
     public interface IOrderServices
     {
-        public List<Order> GetAllOrders();
-        public void AddOrder(Cart cart, int orderId);
+        public IEnumerable<Order> GetAllOrders();
+        public Order? CreateOrder(Cart cart);
+
+        public Order? GetOrderById(int id);
+
 
         public void DeletOrder(Order order);
         public void Save();

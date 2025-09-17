@@ -10,6 +10,7 @@ namespace E_Commerce.application.Repository
 {
     public interface IUserRepository : IGenaricRepository<User,int>
     {
+        public bool IsUserHasMultibleCart(int userId);
         public Task<User?> GetUserByEmailAsync(string email);
         public Task<User?> GetUserByUserNameAsync(string username);
         public User? GetUserByEmail(string email);

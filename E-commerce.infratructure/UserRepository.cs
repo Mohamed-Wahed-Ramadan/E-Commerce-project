@@ -93,5 +93,11 @@ namespace E_commerce.infratructure
                 return null;
             }
         }
+
+        public bool IsUserHasMultibleCart(int userId)
+        {
+            var user = _dbContext.Users.Include(u => u.Carts).FirstOrDefault(u => u.Id == userId);
+            return user?.Carts.Count > 1;
+        }
     }
 }
