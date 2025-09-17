@@ -47,6 +47,12 @@ namespace E_Commerce.application.Services
 
             _context.Delete(product);
         }
+
+        public IEnumerable<Product> SearchProducts(string name)
+        {
+            var products = _context.GetAll().Where(p => p.Name.Contains(name));
+            return products;
+        }
         public int saveProduct()
         {
             return _context.Complete();

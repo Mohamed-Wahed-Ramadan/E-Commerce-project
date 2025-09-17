@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace E_commerce.infratructure
 {
-    public  class CartProRepository: GenericRepository<CartProduct, int>, ICartProRepository
+    internal class CartProRepository: ICartProRepository
     {
         AppDbContext _context;
-        public CartProRepository(AppDbContext context) : base(context)
+        public CartProRepository(AppDbContext context) 
         {
             _context = context;
         }

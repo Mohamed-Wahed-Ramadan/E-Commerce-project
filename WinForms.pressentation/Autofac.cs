@@ -56,10 +56,10 @@ namespace WinForms.pressentation
             builder.RegisterType<ProdsOrderRepository>().As<IProdsOrderRepository>();
             #endregion
 
-            #region AtofacOrderCart
-            builder.RegisterType<CartProductServices>().As<ICartProServices>();
-            builder.RegisterType<CartProRepository>().As<ICartProRepository>();
-            #endregion
+            //#region AtofacOrderCart
+            //builder.RegisterType<CartProductServices>().As<ICartProServices>();
+            //builder.RegisterType<CartProRepository>().As<ICartProRepository>();
+            //#endregion
             return builder.Build();
 
         }

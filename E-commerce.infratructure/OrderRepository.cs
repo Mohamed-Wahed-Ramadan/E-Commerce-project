@@ -1,6 +1,5 @@
 ﻿using E_Commerce.application.Repository;
 using E_Commerce.Context;
-using E_Commerce.Context.Migrations;
 using E_Commerce_project.models;
 using System;
 using System.Collections.Generic;

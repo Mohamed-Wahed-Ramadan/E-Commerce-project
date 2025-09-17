@@ -14,7 +14,7 @@ namespace E_Commerce.application.Interfaces
 {
     public interface IProductServices
     {
-
+        public IEnumerable<Product> SearchProducts(string name);
          List<Product> GetAllProduct();
 
          void AddProduct(Product product);
