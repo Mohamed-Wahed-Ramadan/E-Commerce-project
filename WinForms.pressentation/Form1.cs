@@ -1050,10 +1050,24 @@ namespace WinForms.pressentation
 
         private void AddToCart(Product product)
         {
+            if (product.StockQuantity <= 0)
+            {
+                ShowNotification("This product is out of stock.", false);
+                return;
+            }
+
             if (currentUser == null)
             {
                 // guest -> add to guestCart
                 if (!guestCart.ContainsKey(product.Id)) guestCart[product.Id] = 0;
+
+                // Check if adding one more would exceed stock
+                if (guestCart[product.Id] >= product.StockQuantity)
+                {
+                    ShowNotification($"Cannot add more. Only {product.StockQuantity} items available in stock.", false);
+                    return;
+                }
+
                 guestCart[product.Id]++;
 
                 // Show notification animation
@@ -1063,8 +1077,19 @@ namespace WinForms.pressentation
 
             try
             {
+                // Check current cart quantity first
+                var currentCart = _cartService.GetCartByUserId(currentUser.Id);
+                var existingCartProduct = currentCart?.CartProducts?.FirstOrDefault(cp => cp.ProductId == product.Id);
+                int currentQuantity = existingCartProduct?.Quantity ?? 0;
+
+                if (currentQuantity >= product.StockQuantity)
+                {
+                    ShowNotification($"Cannot add more. Only {product.StockQuantity} items available in stock.", false);
+                    return;
+                }
+
                 // Use CartService to add product to cart
-                currentCart = _cartService.AddProductToCart(currentUser.Id, product.Id, 1);
+                this.currentCart = _cartService.AddProductToCart(currentUser.Id, product.Id, 1);
                 _cartService.Save();
 
                 // Show notification animation
@@ -1218,9 +1243,56 @@ namespace WinForms.pressentation
                         itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
 
                         int pid = kv.Key;
-                        btnPlus.Click += (s, e) => { guestCart[pid]++; BuildCartView(); };
-                        btnMinus.Click += (s, e) => { guestCart[pid] = Math.Max(0, guestCart[pid] - 1); if (guestCart[pid] == 0) guestCart.Remove(pid); BuildCartView(); };
-                        btnDel.Click += (s, e) => { guestCart.Remove(pid); BuildCartView(); };
+                        btnPlus.Click += (s, e) =>
+                        {
+                            // Check stock availability for guest cart
+                            if (guestCart[pid] >= prod.StockQuantity)
+                            {
+                                ShowNotification($"Cannot add more. Only {prod.StockQuantity} items available in stock.", false);
+                                return;
+                            }
+                            guestCart[pid]++;
+                            BuildCartView();
+                        };
+                        btnMinus.Click += (s, e) =>
+                        {
+                            if (guestCart[pid] <= 1)
+                            {
+                                var result = MessageBox.Show(
+                                    "This will remove the item from your cart. Continue?",
+                                    "Remove Item",
+                                    MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Question
+                                );
+
+                                if (result == DialogResult.Yes)
+                                {
+                                    guestCart.Remove(pid);
+                                    BuildCartView();
+                                }
+                            }
+                            else
+                            {
+                                guestCart[pid]--;
+                                BuildCartView();
+                            }
+                        };
+                        btnDel.Click += (s, e) =>
+                        {
+                            var result = MessageBox.Show(
+                                $"Remove {prod.Name} from your cart?",
+                                "Remove Item",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question
+                            );
+
+                            if (result == DialogResult.Yes)
+                            {
+                                guestCart.Remove(pid);
+                                BuildCartView();
+                                ShowNotification("Item removed from cart.", true);
+                            }
+                        };
 
                         y += 70;
                     }
@@ -1315,6 +1387,23 @@ namespace WinForms.pressentation
                         {
                             try
                             {
+                                // Get current product to check stock
+                                var products = _productService.GetAllProduct();
+                                var currentProduct = products.FirstOrDefault(p => p.Id == productId);
+
+                                if (currentProduct == null)
+                                {
+                                    ShowNotification("Product not found.", false);
+                                    return;
+                                }
+
+                                // Check if current quantity + 1 would exceed stock
+                                if (cp.Quantity >= currentProduct.StockQuantity)
+                                {
+                                    ShowNotification($"Cannot add more. Only {currentProduct.StockQuantity} items available in stock.", false);
+                                    return;
+                                }
+
                                 _cartService.AddProductToCart(currentUser.Id, productId, 1);
                                 _cartService.Save();
                                 BuildCartView();
@@ -1328,19 +1417,35 @@ namespace WinForms.pressentation
                         {
                             try
                             {
-                                // We need to implement decrease quantity in cart service
-                                // For now, we'll reload and modify
                                 var cart = _cartService.GetCartByUserId(currentUser.Id);
                                 var cartProduct = cart.CartProducts.FirstOrDefault(c => c.ProductId == productId);
+
                                 if (cartProduct != null)
                                 {
-                                    cartProduct.Quantity = Math.Max(0, cartProduct.Quantity - 1);
-                                    if (cartProduct.Quantity == 0)
+                                    // Check if quantity would go below 1
+                                    if (cartProduct.Quantity <= 1)
                                     {
-                                        cart.CartProducts.Remove(cartProduct);
+                                        // Ask user if they want to remove the item
+                                        var result = MessageBox.Show(
+                                            "This will remove the item from your cart. Continue?",
+                                            "Remove Item",
+                                            MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question
+                                        );
+
+                                        if (result == DialogResult.Yes)
+                                        {
+                                            cart.CartProducts.Remove(cartProduct);
+                                            _cartService.Save();
+                                            BuildCartView();
+                                        }
                                     }
-                                    _cartService.Save();
-                                    BuildCartView();
+                                    else
+                                    {
+                                        cartProduct.Quantity--;
+                                        _cartService.Save();
+                                        BuildCartView();
+                                    }
                                 }
                             }
                             catch (Exception ex)
@@ -1352,13 +1457,24 @@ namespace WinForms.pressentation
                         {
                             try
                             {
-                                var cart = _cartService.GetCartByUserId(currentUser.Id);
-                                var cartProduct = cart.CartProducts.FirstOrDefault(c => c.ProductId == productId);
-                                if (cartProduct != null)
+                                var result = MessageBox.Show(
+                                    $"Remove {prod.Name} from your cart?",
+                                    "Remove Item",
+                                    MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Question
+                                );
+
+                                if (result == DialogResult.Yes)
                                 {
-                                    cart.CartProducts.Remove(cartProduct);
-                                    _cartService.Save();
-                                    BuildCartView();
+                                    var cart = _cartService.GetCartByUserId(currentUser.Id);
+                                    var cartProduct = cart.CartProducts.FirstOrDefault(c => c.ProductId == productId);
+                                    if (cartProduct != null)
+                                    {
+                                        cart.CartProducts.Remove(cartProduct);
+                                        _cartService.Save();
+                                        BuildCartView();
+                                        ShowNotification("Item removed from cart.", true);
+                                    }
                                 }
                             }
                             catch (Exception ex)
