@@ -34,8 +34,8 @@ namespace E_Commerce.Context.Configuration
             
              builder.HasData(
                     new User{ Id = 1, FullName = "Admin", Email = "admin@iti.eg",
-                                PasswordHash = Crypt.HashPassword("admin"),
-                                Role = UserRole.Admin, UserName = "admin" }
+                        PasswordHash = "$2a$11$Wbohky2NKsjWWV/KMuC5feaR5IuYg4mU.7ToAsnxNPfdTFzlktudS",
+                        Role = UserRole.Admin, UserName = "admin" }
                 );
              
 

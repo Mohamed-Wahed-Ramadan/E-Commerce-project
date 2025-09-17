@@ -28,39 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            btnSignIn = new Button();
-            btnLogin = new Button();
-            label1 = new Label();
             SuspendLayout();
-            // 
-            // btnSignIn
-            // 
-            btnSignIn.Location = new Point(63, 147);
-            btnSignIn.Name = "btnSignIn";
-            btnSignIn.Size = new Size(158, 46);
-            btnSignIn.TabIndex = 0;
-            btnSignIn.Text = "Sign In";
-            btnSignIn.UseVisualStyleBackColor = true;
-            btnSignIn.Click += btnSignIn_Click;
-            // 
-            // btnLogin
-            // 
-            btnLogin.Location = new Point(316, 147);
-            btnLogin.Name = "btnLogin";
-            btnLogin.Size = new Size(158, 46);
-            btnLogin.TabIndex = 1;
-            btnLogin.Text = "Login";
-            btnLogin.UseVisualStyleBackColor = true;
-            btnLogin.Click += btnLogin_Click;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(166, 55);
-            label1.Name = "label1";
-            label1.Size = new Size(190, 15);
-            label1.TabIndex = 2;
-            label1.Text = "Welcome to our E-Commerce App";
             // 
             // Form1
             // 
@@ -68,19 +36,12 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ActiveBorder;
             ClientSize = new Size(534, 268);
-            Controls.Add(label1);
-            Controls.Add(btnLogin);
-            Controls.Add(btnSignIn);
             Name = "Form1";
             Text = "Form1";
+            Load += Form1_Load;
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
-
-        private Button btnSignIn;
-        private Button btnLogin;
-        private Label label1;
     }
 }

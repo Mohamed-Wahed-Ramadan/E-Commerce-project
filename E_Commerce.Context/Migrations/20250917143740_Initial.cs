@@ -205,6 +205,11 @@ namespace E_Commerce.Context.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Email", "FullName", "PasswordHash", "Role", "UpdatedAt", "UpdatedBy", "UserName" },
+                values: new object[] { 1, null, null, "admin@iti.eg", "Admin", "$2a$11$Wbohky2NKsjWWV/KMuC5feaR5IuYg4mU.7ToAsnxNPfdTFzlktudS", "Admin", null, null, "admin" });
+
+            migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "CategoryId", "CreatedAt", "CreatedBy", "Description", "ImagePath", "Name", "Price", "StockQuantity", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]

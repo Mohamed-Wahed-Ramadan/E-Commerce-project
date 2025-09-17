@@ -55,7 +55,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.CartProduct", b =>
@@ -93,7 +93,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartProducts", (string)null);
+                    b.ToTable("CartProducts");
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.Category", b =>
@@ -128,7 +128,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -199,7 +199,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.Product", b =>
@@ -248,7 +248,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.HasData(
                         new
@@ -387,7 +387,7 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductOrders", (string)null);
+                    b.ToTable("ProductOrders");
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.User.User", b =>
@@ -434,7 +434,18 @@ namespace E_Commerce.Context.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@iti.eg",
+                            FullName = "Admin",
+                            PasswordHash = "$2a$11$Wbohky2NKsjWWV/KMuC5feaR5IuYg4mU.7ToAsnxNPfdTFzlktudS",
+                            Role = "Admin",
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.Cart", b =>

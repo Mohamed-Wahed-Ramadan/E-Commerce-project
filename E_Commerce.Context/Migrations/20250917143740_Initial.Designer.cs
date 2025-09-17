@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_Commerce.Context.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250915192759_Initial")]
+    [Migration("20250917143740_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -438,6 +438,17 @@ namespace E_Commerce.Context.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@iti.eg",
+                            FullName = "Admin",
+                            PasswordHash = "$2a$11$Wbohky2NKsjWWV/KMuC5feaR5IuYg4mU.7ToAsnxNPfdTFzlktudS",
+                            Role = "Admin",
+                            UserName = "admin"
+                        });
                 });
 
             modelBuilder.Entity("E_Commerce_project.models.Cart", b =>
