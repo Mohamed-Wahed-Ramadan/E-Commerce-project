@@ -201,8 +201,14 @@ namespace WinForms.pressentation
             var btnUser = CreateModernButton("User: Guest", this.Width - 640);
             btnUser.Click += (s, e) =>
             {
-                if (currentUser == null) ShowChooseView();
-                else MessageBox.Show($"Logged in as: {currentUser.Email} ({currentUser.UserName})", "User Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (currentUser == null)
+                {
+                    ShowChooseView();
+                }
+                else
+                {
+                    ShowUserMenu(btnUser);
+                }
             };
             buttons.Add(btnUser);
 
@@ -276,49 +282,13 @@ namespace WinForms.pressentation
 
         private void BuildViews()
         {
-            // Choose view (Login / Register / Browse)
+            // Choose view (Login / Register / Browse) - Content will be built dynamically
             viewChoose = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
                 Padding = new Padding(30),
                 AutoScroll = true
-            };
-
-            var lbl = new Label
-            {
-                Text = "Welcome to E-Commerce App",
-                Font = new Font("Segoe UI", 20, FontStyle.Bold),
-                Location = new Point(30, 30),
-                AutoSize = true,
-                ForeColor = primaryColor
-            };
-            viewChoose.Controls.Add(lbl);
-
-            var subLbl = new Label
-            {
-                Text = "Please choose an option to continue",
-                Font = new Font("Segoe UI", 12),
-                Location = new Point(30, 75),
-                AutoSize = true,
-                ForeColor = textColor
-            };
-            viewChoose.Controls.Add(subLbl);
-
-            var btnLogin = CreateStyledButton("Login", new Point(30, 130), 180, 50);
-            var btnRegister = CreateStyledButton("Register", new Point(230, 130), 180, 50);
-            var btnGuest = CreateStyledButton("Browse as Guest", new Point(430, 130), 200, 50);
-
-            viewChoose.Controls.AddRange(new Control[] { btnLogin, btnRegister, btnGuest });
-
-            btnLogin.Click += (s, e) => BuildAuthForm(isLogin: true);
-            btnRegister.Click += (s, e) => BuildAuthForm(isLogin: false);
-            btnGuest.Click += (s, e) =>
-            {
-                currentUser = null;
-                guestCart.Clear();
-                ShowHomeView();
-                UpdateHeaderUser();
             };
 
             // Home view (product listing) - Improved layout
@@ -598,7 +568,82 @@ namespace WinForms.pressentation
 
         private void ShowChooseView()
         {
+            // Clear existing controls and rebuild based on current user state
+            viewChoose.Controls.Clear();
+            BuildChooseViewContent();
             ShowViewWithAnimation(viewChoose);
+        }
+
+        private void BuildChooseViewContent()
+        {
+            var lbl = new Label
+            {
+                Text = currentUser == null ? "Welcome to E-Commerce App" : $"Welcome back, {currentUser.UserName}!",
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                Location = new Point(30, 30),
+                AutoSize = true,
+                ForeColor = primaryColor
+            };
+            viewChoose.Controls.Add(lbl);
+
+            var subLbl = new Label
+            {
+                Text = currentUser == null ? "Please choose an option to continue" : "Choose an option below or continue shopping",
+                Font = new Font("Segoe UI", 12),
+                Location = new Point(30, 75),
+                AutoSize = true,
+                ForeColor = textColor
+            };
+            viewChoose.Controls.Add(subLbl);
+
+            if (currentUser == null)
+            {
+                // Show login/register options for guests
+                var btnLogin = CreateStyledButton("Login", new Point(30, 130), 180, 50);
+                var btnRegister = CreateStyledButton("Register", new Point(230, 130), 180, 50);
+                var btnGuest = CreateStyledButton("Browse as Guest", new Point(430, 130), 200, 50);
+
+                viewChoose.Controls.AddRange(new Control[] { btnLogin, btnRegister, btnGuest });
+
+                btnLogin.Click += (s, e) => BuildAuthForm(isLogin: true);
+                btnRegister.Click += (s, e) => BuildAuthForm(isLogin: false);
+                btnGuest.Click += (s, e) =>
+                {
+                    currentUser = null;
+                    guestCart.Clear();
+                    ShowHomeView();
+                    UpdateHeaderUser();
+                };
+            }
+            else
+            {
+                // Show options for logged-in users
+                var btnContinueShopping = CreateStyledButton("Continue Shopping", new Point(30, 130), 200, 50);
+                var btnViewCart = CreateStyledButton("View My Cart", new Point(250, 130), 180, 50);
+                var btnViewOrders = CreateStyledButton("View My Orders", new Point(450, 130), 180, 50);
+                var btnSignOut = CreateStyledButton("Sign Out", new Point(650, 130), 150, 50);
+
+                // Style sign out button differently
+                btnSignOut.BackColor = Color.FromArgb(255, 240, 240);
+                btnSignOut.ForeColor = errorColor;
+
+                viewChoose.Controls.AddRange(new Control[] { btnContinueShopping, btnViewCart, btnViewOrders, btnSignOut });
+
+                btnContinueShopping.Click += (s, e) => ShowHomeView();
+                btnViewCart.Click += (s, e) => ShowCartView();
+                btnViewOrders.Click += (s, e) => ShowOrdersView();
+                btnSignOut.Click += (s, e) => SignOut();
+
+                // Show admin option if user is admin
+                if (currentUser.Role == UserRole.Admin)
+                {
+                    var btnAdmin = CreateStyledButton("Admin Panel", new Point(30, 200), 180, 50);
+                    btnAdmin.BackColor = Color.FromArgb(240, 245, 255);
+                    btnAdmin.ForeColor = secondaryColor;
+                    btnAdmin.Click += (s, e) => ShowAdminView();
+                    viewChoose.Controls.Add(btnAdmin);
+                }
+            }
         }
 
         private void ShowHomeView()
@@ -843,6 +888,99 @@ namespace WinForms.pressentation
                     btnUser.BackColor = lightColor;
                     btnUser.Font = new Font(btnUser.Font, FontStyle.Bold);
                 }
+            }
+        }
+
+        private void ShowUserMenu(Button userButton)
+        {
+            var contextMenu = new ContextMenuStrip();
+            contextMenu.BackColor = lightColor;
+            contextMenu.ForeColor = textColor;
+            contextMenu.Font = new Font("Segoe UI", 10);
+
+            // User info item
+            var userInfoItem = new ToolStripLabel($"Logged in as: {currentUser.UserName}")
+            {
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = primaryColor
+            };
+            contextMenu.Items.Add(userInfoItem);
+
+            // Separator
+            contextMenu.Items.Add(new ToolStripSeparator());
+
+            // Email info
+            var emailItem = new ToolStripLabel($"Email: {currentUser.Email}")
+            {
+                Font = new Font("Segoe UI", 9),
+                ForeColor = textColor
+            };
+            contextMenu.Items.Add(emailItem);
+
+            // Role info
+            var roleItem = new ToolStripLabel($"Role: {currentUser.Role}")
+            {
+                Font = new Font("Segoe UI", 9),
+                ForeColor = textColor
+            };
+            contextMenu.Items.Add(roleItem);
+
+            // Separator
+            contextMenu.Items.Add(new ToolStripSeparator());
+
+            // Admin panel option (only for admins)
+            if (currentUser.Role == UserRole.Admin)
+            {
+                var adminItem = new ToolStripMenuItem("Admin Panel")
+                {
+                    Font = new Font("Segoe UI", 9),
+                    ForeColor = secondaryColor
+                };
+                adminItem.Click += (s, e) => ShowAdminView();
+                contextMenu.Items.Add(adminItem);
+            }
+
+            // Sign out option
+            var signOutItem = new ToolStripMenuItem("Sign Out")
+            {
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = errorColor
+            };
+            signOutItem.Click += (s, e) => SignOut();
+            contextMenu.Items.Add(signOutItem);
+
+            // Show the menu below the user button
+            var buttonLocation = userButton.PointToScreen(Point.Empty);
+            contextMenu.Show(buttonLocation.X, buttonLocation.Y + userButton.Height);
+        }
+
+        private void SignOut()
+        {
+            // Show confirmation dialog
+            var result = MessageBox.Show(
+                "Are you sure you want to sign out?",
+                "Confirm Sign Out",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                // Clear user session
+                currentUser = null;
+                currentCart = null;
+
+                // Clear guest cart as well for security
+                guestCart.Clear();
+
+                // Update header to show guest user
+                UpdateHeaderUser();
+
+                // Show notification
+                ShowNotification("You have been signed out successfully.", true);
+
+                // Navigate to choose view
+                ShowChooseView();
             }
         }
 
