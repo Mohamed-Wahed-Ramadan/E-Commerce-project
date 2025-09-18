@@ -134,32 +134,20 @@ namespace E_Commerce.Context.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Devices and gadgets",
-                            Name = "Electronics"
+                            Description = "Ancient statues and artifacts",
+                            Name = "Antiquities"
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Fashion and apparel",
-                            Name = "Clothes"
+                            Description = "Precious gems and artifacts",
+                            Name = "Jewelry"
                         },
                         new
                         {
                             Id = 3,
-                            Description = "Educational and entertainment books",
-                            Name = "Books"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Appliances for home use",
-                            Name = "Home Appliances"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Sports equipment and accessories",
-                            Name = "Sports"
+                            Description = "Bars and pieces of metal",
+                            Name = "Metals"
                         });
                 });
 
@@ -255,100 +243,111 @@ namespace E_Commerce.Context.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            Description = "High performance laptop",
-                            Name = "Laptop",
-                            Price = 15000m,
-                            StockQuantity = 20
+                            Description = "A replica of the famous golden mask of Tutankhamun.",
+                            ImagePath = "images/a1.png",
+                            Name = "Tutankhamun's Mask",
+                            Price = 5000m,
+                            StockQuantity = 10
                         },
                         new
                         {
                             Id = 2,
                             CategoryId = 1,
-                            Description = "Latest smartphone",
-                            Name = "Smartphone",
-                            Price = 8000m,
-                            StockQuantity = 50
+                            Description = "A statue of a high-ranking official from ancient Egypt.",
+                            ImagePath = "images/a2.png",
+                            Name = "Pharaonic Statue",
+                            Price = 3500m,
+                            StockQuantity = 15
                         },
                         new
                         {
                             Id = 3,
                             CategoryId = 1,
-                            Description = "Wireless headphones",
-                            Name = "Headphones",
-                            Price = 1200m,
-                            StockQuantity = 70
+                            Description = "A statue of the falcon god Horus.",
+                            ImagePath = "images/a3.png",
+                            Name = "Horus Falcon Statue",
+                            Price = 4500m,
+                            StockQuantity = 12
                         },
                         new
                         {
                             Id = 4,
-                            CategoryId = 2,
-                            Description = "Cotton T-shirt",
-                            Name = "T-Shirt",
-                            Price = 250m,
-                            StockQuantity = 100
+                            CategoryId = 1,
+                            Description = "A statue of a winged lion from ancient mythology.",
+                            ImagePath = "images/a4.png",
+                            Name = "Winged Lion Statue",
+                            Price = 4200m,
+                            StockQuantity = 8
                         },
                         new
                         {
                             Id = 5,
-                            CategoryId = 2,
-                            Description = "Blue denim jeans",
-                            Name = "Jeans",
-                            Price = 500m,
-                            StockQuantity = 60
+                            CategoryId = 1,
+                            Description = "An ankh, the ancient Egyptian hieroglyphic symbol for life.",
+                            ImagePath = "images/a5.png",
+                            Name = "Ankh (Key of Life)",
+                            Price = 2000m,
+                            StockQuantity = 20
                         },
                         new
                         {
                             Id = 6,
-                            CategoryId = 3,
-                            Description = "Bestselling novel",
-                            Name = "Novel",
-                            Price = 120m,
-                            StockQuantity = 40
+                            CategoryId = 1,
+                            Description = "A bust of the Great Royal Wife of Pharaoh Akhenaten.",
+                            ImagePath = "images/a6.png",
+                            Name = "Queen Nefertiti Bust",
+                            Price = 5500m,
+                            StockQuantity = 7
                         },
                         new
                         {
                             Id = 7,
-                            CategoryId = 3,
-                            Description = "Learn C# from scratch",
-                            Name = "Programming Book",
-                            Price = 300m,
-                            StockQuantity = 30
+                            CategoryId = 1,
+                            Description = "A replica of the iconic Great Sphinx of Giza.",
+                            ImagePath = "images/a7.png",
+                            Name = "Sphinx Statue",
+                            Price = 4800m,
+                            StockQuantity = 10
                         },
                         new
                         {
                             Id = 8,
-                            CategoryId = 4,
-                            Description = "800W microwave oven",
-                            Name = "Microwave",
-                            Price = 2500m,
-                            StockQuantity = 15
+                            CategoryId = 3,
+                            Description = "Pure gold bullion bars.",
+                            ImagePath = "images/b1.png",
+                            Name = "Gold Bars",
+                            Price = 100000m,
+                            StockQuantity = 5
                         },
                         new
                         {
                             Id = 9,
-                            CategoryId = 4,
-                            Description = "Bagless vacuum cleaner",
-                            Name = "Vacuum Cleaner",
-                            Price = 1800m,
-                            StockQuantity = 25
+                            CategoryId = 3,
+                            Description = "Small pure gold bars.",
+                            ImagePath = "images/b2.png",
+                            Name = "Small Gold Bars",
+                            Price = 50000m,
+                            StockQuantity = 8
                         },
                         new
                         {
                             Id = 10,
-                            CategoryId = 5,
-                            Description = "Official size football",
-                            Name = "Football",
-                            Price = 400m,
-                            StockQuantity = 80
+                            CategoryId = 2,
+                            Description = "A natural, uncut red ruby.",
+                            ImagePath = "images/c1.png",
+                            Name = "Red Ruby Gem",
+                            Price = 25000m,
+                            StockQuantity = 3
                         },
                         new
                         {
                             Id = 11,
-                            CategoryId = 5,
-                            Description = "Professional tennis racket",
-                            Name = "Tennis Racket",
-                            Price = 950m,
-                            StockQuantity = 20
+                            CategoryId = 2,
+                            Description = "A natural, uncut raw diamond.",
+                            ImagePath = "images/c2.png",
+                            Name = "Raw Diamond Gem",
+                            Price = 120000m,
+                            StockQuantity = 2
                         });
                 });
 

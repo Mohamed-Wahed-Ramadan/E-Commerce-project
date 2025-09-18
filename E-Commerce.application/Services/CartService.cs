@@ -12,8 +12,14 @@ namespace E_Commerce.application.Services
 {
     public class CartService : ICartServices
     {
-        ICartRepository _cartRepo;
+        //ICartRepository _cartRepo;
 
+        private readonly ICartRepository _cartRepo;
+
+        public CartService(ICartRepository cartRepo)
+        {
+            _cartRepo = cartRepo;
+        }
         public void AddCart(Cart cart)
         {
             _cartRepo.AddCart(cart);

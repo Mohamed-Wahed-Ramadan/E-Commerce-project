@@ -23,6 +23,7 @@ namespace E_commerce.infratructure
                 new CartProduct
                 {
                     ProductId = pro.Id,
+
                     Quantity = 1
                 } );
         }

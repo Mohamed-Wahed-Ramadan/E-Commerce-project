@@ -197,11 +197,9 @@ namespace E_Commerce.Context.Migrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "Description", "Name", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, null, null, "Devices and gadgets", "Electronics", null, null },
-                    { 2, null, null, "Fashion and apparel", "Clothes", null, null },
-                    { 3, null, null, "Educational and entertainment books", "Books", null, null },
-                    { 4, null, null, "Appliances for home use", "Home Appliances", null, null },
-                    { 5, null, null, "Sports equipment and accessories", "Sports", null, null }
+                    { 1, null, null, "Ancient statues and artifacts", "Antiquities", null, null },
+                    { 2, null, null, "Precious gems and artifacts", "Jewelry", null, null },
+                    { 3, null, null, "Bars and pieces of metal", "Metals", null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -214,17 +212,17 @@ namespace E_Commerce.Context.Migrations
                 columns: new[] { "Id", "CategoryId", "CreatedAt", "CreatedBy", "Description", "ImagePath", "Name", "Price", "StockQuantity", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, 1, null, null, "High performance laptop", null, "Laptop", 15000m, 20, null, null },
-                    { 2, 1, null, null, "Latest smartphone", null, "Smartphone", 8000m, 50, null, null },
-                    { 3, 1, null, null, "Wireless headphones", null, "Headphones", 1200m, 70, null, null },
-                    { 4, 2, null, null, "Cotton T-shirt", null, "T-Shirt", 250m, 100, null, null },
-                    { 5, 2, null, null, "Blue denim jeans", null, "Jeans", 500m, 60, null, null },
-                    { 6, 3, null, null, "Bestselling novel", null, "Novel", 120m, 40, null, null },
-                    { 7, 3, null, null, "Learn C# from scratch", null, "Programming Book", 300m, 30, null, null },
-                    { 8, 4, null, null, "800W microwave oven", null, "Microwave", 2500m, 15, null, null },
-                    { 9, 4, null, null, "Bagless vacuum cleaner", null, "Vacuum Cleaner", 1800m, 25, null, null },
-                    { 10, 5, null, null, "Official size football", null, "Football", 400m, 80, null, null },
-                    { 11, 5, null, null, "Professional tennis racket", null, "Tennis Racket", 950m, 20, null, null }
+                    { 1, 1, null, null, "A replica of the famous golden mask of Tutankhamun.", "images/a1.png", "Tutankhamun's Mask", 5000m, 10, null, null },
+                    { 2, 1, null, null, "A statue of a high-ranking official from ancient Egypt.", "images/a2.png", "Pharaonic Statue", 3500m, 15, null, null },
+                    { 3, 1, null, null, "A statue of the falcon god Horus.", "images/a3.png", "Horus Falcon Statue", 4500m, 12, null, null },
+                    { 4, 1, null, null, "A statue of a winged lion from ancient mythology.", "images/a4.png", "Winged Lion Statue", 4200m, 8, null, null },
+                    { 5, 1, null, null, "An ankh, the ancient Egyptian hieroglyphic symbol for life.", "images/a5.png", "Ankh (Key of Life)", 2000m, 20, null, null },
+                    { 6, 1, null, null, "A bust of the Great Royal Wife of Pharaoh Akhenaten.", "images/a6.png", "Queen Nefertiti Bust", 5500m, 7, null, null },
+                    { 7, 1, null, null, "A replica of the iconic Great Sphinx of Giza.", "images/a7.png", "Sphinx Statue", 4800m, 10, null, null },
+                    { 8, 3, null, null, "Pure gold bullion bars.", "images/b1.png", "Gold Bars", 100000m, 5, null, null },
+                    { 9, 3, null, null, "Small pure gold bars.", "images/b2.png", "Small Gold Bars", 50000m, 8, null, null },
+                    { 10, 2, null, null, "A natural, uncut red ruby.", "images/c1.png", "Red Ruby Gem", 25000m, 3, null, null },
+                    { 11, 2, null, null, "A natural, uncut raw diamond.", "images/c2.png", "Raw Diamond Gem", 120000m, 2, null, null }
                 });
 
             migrationBuilder.CreateIndex(

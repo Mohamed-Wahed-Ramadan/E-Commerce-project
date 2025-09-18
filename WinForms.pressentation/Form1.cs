@@ -36,6 +36,15 @@ namespace WinForms.pressentation
         private Dictionary<int, int> guestCart = new();
         private FlowLayoutPanel productsFlow;
 
+        // Search components
+        private TextBox searchBox;
+        private ComboBox categoryFilter;
+        private ComboBox priceFilter;
+        private Button searchButton;
+        private Button clearButton;
+        private List<Product> allProducts = new List<Product>();
+        private List<Product> filteredProducts = new List<Product>();
+
         // Animation variables
         private System.Windows.Forms.Timer animationTimer;
         private int animationCounter = 0;
@@ -290,24 +299,8 @@ namespace WinForms.pressentation
                 UpdateHeaderUser();
             };
 
-            // Home view (product listing)
-            viewHome = new Panel
-            {
-                Dock = DockStyle.Fill,
-                BackColor = backgroundColor,
-                Padding = new Padding(10)
-            };
-
-            productsFlow = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill,
-                AutoScroll = true,
-                Padding = new Padding(12),
-                FlowDirection = FlowDirection.LeftToRight,
-                WrapContents = true,
-                BackColor = backgroundColor
-            };
-            viewHome.Controls.Add(productsFlow);
+            // Build Home view with search functionality
+            BuildHomeViewWithSearch();
 
             // Cart view
             viewCart = new Panel
@@ -335,6 +328,232 @@ namespace WinForms.pressentation
 
             // add views to body (we'll show/hide)
             pnlBody.Controls.AddRange(new Control[] { viewChoose, viewHome, viewCart, viewOrders, viewAdmin });
+        }
+
+        private void BuildHomeViewWithSearch()
+        {
+            // Home view (product listing with search)
+            viewHome = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = backgroundColor,
+                Padding = new Padding(10)
+            };
+
+            // إنشاء لوحة البحث المحسنة
+            var searchPanel = CreateSearchPanel();
+            viewHome.Controls.Add(searchPanel);
+
+            // إنشاء لوحة المنتجات مع إعدادات التمرير الصحيحة
+            productsFlow = new FlowLayoutPanel
+            {
+                Location = new Point(10, 130),
+                Size = new Size(1160, 530),
+                Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                AutoScroll = true,
+                AutoScrollMargin = new Size(10, 10),
+                Padding = new Padding(12),
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = true,
+                BackColor = backgroundColor
+            };
+
+            viewHome.Controls.Add(productsFlow);
+        }
+
+        private Panel CreateSearchPanel()
+        {
+            var searchPanel = new Panel
+            {
+                Location = new Point(10, 10),
+                Size = new Size(1160, 110),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                BackColor = lightColor,
+                BorderStyle = BorderStyle.None
+            };
+
+
+            // إضافة حدود مخصصة للوحة البحث
+            searchPanel.Paint += (s, e) =>
+            {
+                ControlPaint.DrawBorder(e.Graphics, searchPanel.ClientRectangle,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid);
+            };
+
+            // عنوان البحث
+            var searchTitle = new Label
+            {
+                Text = "Search & Filter Products",
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(15, 10),
+                AutoSize = true,
+                ForeColor = primaryColor
+            };
+            searchPanel.Controls.Add(searchTitle);
+
+            // الصف الأول - البحث النصي
+            var searchLabel = new Label
+            {
+                Text = "Search:",
+                Location = new Point(15, 45),
+                Size = new Size(60, 20),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = textColor,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            searchPanel.Controls.Add(searchLabel);
+
+            searchBox = new TextBox
+            {
+                Location = new Point(80, 42),
+                Width = 250,
+                Height = 25,
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle,
+                Font = new Font("Segoe UI", 10)
+            };
+
+            // إضافة placeholder text
+            searchBox.Enter += (s, e) =>
+            {
+                if (searchBox.Text == "Enter product name...")
+                {
+                    searchBox.Text = "";
+                    searchBox.ForeColor = textColor;
+                }
+            };
+
+            searchBox.Leave += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(searchBox.Text))
+                {
+                    searchBox.Text = "Enter product name...";
+                    searchBox.ForeColor = Color.Gray;
+                }
+            };
+
+            searchBox.Text = "Enter product name...";
+            searchBox.ForeColor = Color.Gray;
+
+            // البحث أثناء الكتابة
+            searchBox.TextChanged += (s, e) => PerformSearch();
+            searchPanel.Controls.Add(searchBox);
+
+            // فلتر الفئات
+            var categoryLabel = new Label
+            {
+                Text = "Category:",
+                Location = new Point(350, 45),
+                Size = new Size(70, 20),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = textColor,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            searchPanel.Controls.Add(categoryLabel);
+
+            categoryFilter = new ComboBox
+            {
+                Location = new Point(430, 42),
+                Width = 180,
+                Height = 25,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                BackColor = Color.White,
+                ForeColor = textColor,
+                Font = new Font("Segoe UI", 10)
+            };
+            categoryFilter.SelectedIndexChanged += (s, e) => PerformSearch();
+            searchPanel.Controls.Add(categoryFilter);
+
+            // فلتر السعر
+            var priceLabel = new Label
+            {
+                Text = "Price Range:",
+                Location = new Point(630, 45),
+                Size = new Size(90, 20),
+                Font = new Font("Segoe UI", 10),
+                ForeColor = textColor,
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            searchPanel.Controls.Add(priceLabel);
+
+            priceFilter = new ComboBox
+            {
+                Location = new Point(730, 42),
+                Width = 150,
+                Height = 25,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                BackColor = Color.White,
+                ForeColor = textColor,
+                Font = new Font("Segoe UI", 10)
+            };
+            priceFilter.Items.AddRange(new string[]
+            {
+        "All Prices",
+        "Under 100 EGP",
+        "100 - 500 EGP",
+        "500 - 1000 EGP",
+        "Over 1000 EGP"
+            });
+            priceFilter.SelectedIndex = 0;
+            priceFilter.SelectedIndexChanged += (s, e) => PerformSearch();
+            searchPanel.Controls.Add(priceFilter);
+
+            // الأزرار
+            searchButton = CreateModernSearchButton("Search", new Point(900, 40));
+            searchButton.Click += (s, e) => PerformSearch();
+            searchPanel.Controls.Add(searchButton);
+
+            clearButton = CreateModernSearchButton("Clear", new Point(980, 40));
+            clearButton.Click += (s, e) => ClearSearch();
+            searchPanel.Controls.Add(clearButton);
+
+            // إضافة عداد النتائج
+            var resultsLabel = new Label
+            {
+                Name = "resultsCounter",
+                Text = "Showing all products",
+                Location = new Point(15, 80),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Italic),
+                ForeColor = secondaryColor
+            };
+            searchPanel.Controls.Add(resultsLabel);
+
+            return searchPanel;
+        }
+
+        private Button CreateModernSearchButton(string text, Point location)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Location = location,
+                Width = 70,
+                Height = 30,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = primaryColor,
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+
+            // تأثيرات التمرير
+            btn.MouseEnter += (s, e) =>
+            {
+                btn.BackColor = secondaryColor;
+            };
+
+            btn.MouseLeave += (s, e) =>
+            {
+                btn.BackColor = primaryColor;
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            return btn;
         }
 
         private Button CreateStyledButton(string text, Point location, int width, int height)
@@ -609,21 +828,147 @@ namespace WinForms.pressentation
 
         #endregion
 
-        #region Products / Home
+        #region Products / Home with Search
 
         private void LoadProducts()
         {
             productsFlow.Controls.Clear();
 
-            var products = _db.Products
-                .OrderBy(p => p.Id)
-                .ToList();
+            // تحميل جميع المنتجات
+            allProducts = _db.Products.OrderBy(p => p.Name).ToList();
+            filteredProducts = new List<Product>(allProducts);
 
-            foreach (var p in products)
+            // تحميل الفئات في ComboBox
+            LoadCategories();
+
+            // عرض جميع المنتجات
+            DisplayProducts(filteredProducts);
+            UpdateResultsCounter(filteredProducts.Count, allProducts.Count);
+        }
+
+        private void LoadCategories()
+        {
+            categoryFilter.Items.Clear();
+            categoryFilter.Items.Add("All Categories");
+
+            var categories = _db.Categories.OrderBy(c => c.Name).ToList();
+            foreach (var category in categories)
             {
-                var card = BuildProductCard(p);
-                productsFlow.Controls.Add(card);
+                categoryFilter.Items.Add(category.Name);
             }
+
+            categoryFilter.SelectedIndex = 0;
+        }
+
+        private void PerformSearch()
+        {
+            if (allProducts == null || allProducts.Count == 0) return;
+
+            var searchText = searchBox.Text.Trim().ToLower();
+            if (searchText == "enter product name...") searchText = "";
+
+            var selectedCategory = categoryFilter.SelectedItem?.ToString();
+            var selectedPriceRange = priceFilter.SelectedItem?.ToString();
+
+            // تطبيق الفلاتر
+            filteredProducts = allProducts.Where(p =>
+            {
+                // فلتر النص
+                bool matchesText = string.IsNullOrEmpty(searchText) ||
+                                  p.Name.ToLower().Contains(searchText) ||
+                                  (p.Description?.ToLower().Contains(searchText) ?? false);
+
+                // فلتر الفئة
+                bool matchesCategory = selectedCategory == "All Categories" || string.IsNullOrEmpty(selectedCategory);
+                if (!matchesCategory && p.CategoryId.HasValue)
+                {
+                    var productCategory = _db.Categories.Find(p.CategoryId.Value);
+                    matchesCategory = productCategory?.Name == selectedCategory;
+                }
+
+                // فلتر السعر
+                bool matchesPrice = true;
+                if (selectedPriceRange != null && selectedPriceRange != "All Prices")
+                {
+                    matchesPrice = selectedPriceRange switch
+                    {
+                        "Under 100 EGP" => p.Price < 100,
+                        "100 - 500 EGP" => p.Price >= 100 && p.Price <= 500,
+                        "500 - 1000 EGP" => p.Price > 500 && p.Price <= 1000,
+                        "Over 1000 EGP" => p.Price > 1000,
+                        _ => true
+                    };
+                }
+
+                return matchesText && matchesCategory && matchesPrice;
+            }).ToList();
+
+            // عرض النتائج
+            DisplayProducts(filteredProducts);
+            UpdateResultsCounter(filteredProducts.Count, allProducts.Count);
+        }
+
+        private void DisplayProducts(List<Product> products)
+        {
+            productsFlow.SuspendLayout();
+            productsFlow.Controls.Clear();
+
+            if (products.Count == 0)
+            {
+                var noResultsLabel = new Label
+                {
+                    Text = "No products found matching your search criteria.",
+                    Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                    ForeColor = secondaryColor,
+                    AutoSize = true,
+                    Margin = new Padding(20)
+                };
+                productsFlow.Controls.Add(noResultsLabel);
+            }
+            else
+            {
+                foreach (var product in products)
+                {
+                    var card = BuildProductCard(product);
+                    productsFlow.Controls.Add(card);
+                }
+            }
+
+            productsFlow.ResumeLayout(true);
+            productsFlow.PerformLayout();
+
+            // تأكد من إعادة حساب التمرير
+            productsFlow.AutoScroll = false;
+            productsFlow.AutoScroll = true;
+        }
+
+
+        private void UpdateResultsCounter(int filteredCount, int totalCount)
+        {
+            var resultsLabel = viewHome.Controls.Find("resultsCounter", true).FirstOrDefault() as Label;
+            if (resultsLabel != null)
+            {
+                if (filteredCount == totalCount)
+                {
+                    resultsLabel.Text = $"Showing all {totalCount} products";
+                }
+                else
+                {
+                    resultsLabel.Text = $"Showing {filteredCount} of {totalCount} products";
+                }
+            }
+        }
+
+        private void ClearSearch()
+        {
+            searchBox.Text = "Enter product name...";
+            searchBox.ForeColor = Color.Gray;
+            categoryFilter.SelectedIndex = 0;
+            priceFilter.SelectedIndex = 0;
+
+            filteredProducts = new List<Product>(allProducts);
+            DisplayProducts(filteredProducts);
+            UpdateResultsCounter(filteredProducts.Count, allProducts.Count);
         }
 
         private Control BuildProductCard(Product p)
@@ -631,16 +976,15 @@ namespace WinForms.pressentation
             var card = new Panel
             {
                 Width = 260,
-                Height = 350,
+                Height = 380,
                 Margin = new Padding(15),
                 BackColor = lightColor,
                 BorderStyle = BorderStyle.None,
                 Cursor = Cursors.Hand
             };
 
-            // Add shadow effect
+            // إضافة حدود وتأثير الظل
             card.Paint += (s, e) => {
-                // Draw border with secondary color
                 ControlPaint.DrawBorder(e.Graphics, card.ClientRectangle,
                     secondaryColor, 1, ButtonBorderStyle.Solid,
                     secondaryColor, 1, ButtonBorderStyle.Solid,
@@ -648,7 +992,7 @@ namespace WinForms.pressentation
                     secondaryColor, 1, ButtonBorderStyle.Solid);
             };
 
-            // Add hover effect
+            // تأثير التمرير
             card.MouseEnter += (s, e) => {
                 card.BackColor = Color.FromArgb(240, 235, 225);
             };
@@ -656,10 +1000,10 @@ namespace WinForms.pressentation
                 card.BackColor = lightColor;
             };
 
-            // Click event to show product details
+            // النقر لعرض التفاصيل
             card.Click += (s, e) => ShowProductDetails(p);
 
-            // picture
+            // صورة المنتج
             var pb = new PictureBox
             {
                 Location = new Point(10, 10),
@@ -673,10 +1017,9 @@ namespace WinForms.pressentation
             {
                 try
                 {
-                    // Get project root and build image path
                     string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
                     string imagePath = Path.Combine(projectRoot, "images", p.ImagePath);
-                    
+
                     if (File.Exists(imagePath))
                     {
                         pb.Image = Image.FromFile(imagePath);
@@ -693,10 +1036,10 @@ namespace WinForms.pressentation
                 pb.Image = GeneratePlaceholderImage(p.Name, pb.Width, pb.Height);
             }
 
-            // Add click event to picture as well
             pb.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(pb);
 
+            // اسم المنتج
             var lblName = new Label
             {
                 Text = p.Name,
@@ -711,6 +1054,7 @@ namespace WinForms.pressentation
             lblName.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblName);
 
+            // وصف المنتج
             var lblDesc = new Label
             {
                 Text = p.Description ?? "",
@@ -723,6 +1067,7 @@ namespace WinForms.pressentation
             lblDesc.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblDesc);
 
+            // السعر
             var lblPrice = new Label
             {
                 Text = $"Price: {p.Price:N2} EGP",
@@ -735,10 +1080,24 @@ namespace WinForms.pressentation
             lblPrice.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblPrice);
 
+            // الكمية المتاحة
+            var lblStock = new Label
+            {
+                Text = $"Stock: {p.StockQuantity}",
+                Location = new Point(10, 290),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9),
+                ForeColor = p.StockQuantity > 0 ? Color.Green : Color.Red,
+                Cursor = Cursors.Hand
+            };
+            lblStock.Click += (s, e) => ShowProductDetails(p);
+            card.Controls.Add(lblStock);
+
+            // زر إضافة للسلة
             var btnAdd = new Button
             {
                 Text = "Add to Cart",
-                Location = new Point(130, 260),
+                Location = new Point(130, 285),
                 Width = 120,
                 Height = 32,
                 FlatStyle = FlatStyle.Flat,
@@ -748,7 +1107,7 @@ namespace WinForms.pressentation
                 Cursor = Cursors.Hand
             };
 
-            // Add hover effects to button
+            // تأثيرات التمرير للزر
             btnAdd.MouseEnter += (s, e) => {
                 btnAdd.BackColor = Color.FromArgb(240, 235, 225);
                 btnAdd.FlatAppearance.BorderColor = primaryColor;
@@ -764,11 +1123,22 @@ namespace WinForms.pressentation
             btnAdd.FlatAppearance.BorderColor = secondaryColor;
             btnAdd.FlatAppearance.BorderSize = 1;
 
-            btnAdd.Click += (s, e) => AddToCart(p);
-            card.Controls.Add(btnAdd);
+            // تعطيل الزر إذا نفد المخزون
+            if (p.StockQuantity <= 0)
+            {
+                btnAdd.Enabled = false;
+                btnAdd.BackColor = Color.LightGray;
+                btnAdd.Text = "Out of Stock";
+            }
+            else
+            {
+                btnAdd.Click += (s, e) => AddToCart(p);
+            }
 
+            card.Controls.Add(btnAdd);
             return card;
         }
+
 
         private void ShowProductDetails(Product product)
         {
@@ -811,7 +1181,7 @@ namespace WinForms.pressentation
                     // Get project root and build image path
                     string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
                     string imagePath = Path.Combine(projectRoot, "images", product.ImagePath);
-                    
+
                     if (File.Exists(imagePath))
                     {
                         pictureBox.Image = Image.FromFile(imagePath);
@@ -860,6 +1230,18 @@ namespace WinForms.pressentation
 
             yPos += 40;
 
+            var stockLabel = new Label
+            {
+                Text = $"In Stock: {product.StockQuantity}",
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(rightColumnX, yPos),
+                AutoSize = true,
+                ForeColor = product.StockQuantity > 0 ? Color.Green : Color.Red
+            };
+            mainPanel.Controls.Add(stockLabel);
+
+            yPos += 40;
+
             var descLabel = new Label
             {
                 Text = "Description:",
@@ -888,23 +1270,21 @@ namespace WinForms.pressentation
 
             yPos += 120;
 
-            var stockLabel = new Label
-            {
-                Text = $"In Stock: {product.StockQuantity}",
-                Font = new Font("Segoe UI", 11),
-                Location = new Point(rightColumnX, yPos),
-                AutoSize = true,
-                ForeColor = textColor
-            };
-            mainPanel.Controls.Add(stockLabel);
-
-            yPos += 40;
-
             var addButton = CreateStyledButton("Add to Cart", new Point(rightColumnX, yPos), 120, 35);
-            addButton.Click += (s, e) => {
-                AddToCart(product);
-                detailForm.Close();
-            };
+
+            // تعطيل الزر إذا لم يكن المنتج متاح
+            if (product.StockQuantity <= 0)
+            {
+                addButton.Enabled = false;
+                addButton.Text = "Out of Stock";
+            }
+            else
+            {
+                addButton.Click += (s, e) => {
+                    AddToCart(product);
+                    detailForm.Close();
+                };
+            }
             mainPanel.Controls.Add(addButton);
 
             var closeButton = CreateStyledButton("Close", new Point(rightColumnX + 130, yPos), 120, 35);
@@ -954,8 +1334,28 @@ namespace WinForms.pressentation
 
         private void AddToCart(Product product)
         {
+            // التحقق من توفر الكمية
+            if (product.StockQuantity <= 0)
+            {
+                ShowNotification("This product is currently unavailable", false);
+                return;
+            }
+
             if (currentUser == null)
             {
+                // التحقق من الكمية المتاحة للضيف
+                int requestedQuantity = 1;
+                if (guestCart.ContainsKey(product.Id))
+                {
+                    requestedQuantity += guestCart[product.Id];
+                }
+
+                if (requestedQuantity > product.StockQuantity)
+                {
+                    ShowNotification($"Requested quantity ({requestedQuantity}) is greater than available ({product.StockQuantity})", false);
+                    return;
+                }
+
                 // guest -> add to guestCart
                 if (!guestCart.ContainsKey(product.Id)) guestCart[product.Id] = 0;
                 guestCart[product.Id]++;
@@ -965,10 +1365,23 @@ namespace WinForms.pressentation
                 return;
             }
 
-            // persisted cart
+            // التحقق من الكمية المتاحة للمستخدم المسجل
             if (currentCart == null) LoadOrCreateCartForCurrentUser();
 
             var existing = _db.CartProducts.SingleOrDefault(cp => cp.CartId == currentCart.Id && cp.ProductId == product.Id);
+            int requestedQuantityUser = 1;
+            if (existing != null)
+            {
+                requestedQuantityUser += existing.Quantity;
+            }
+
+            if (requestedQuantityUser > product.StockQuantity)
+            {
+                ShowNotification($"Requested quantity ({requestedQuantityUser}) is greater than available ({product.StockQuantity})", false);
+                return;
+            }
+
+            // persisted cart
             if (existing != null)
             {
                 existing.Quantity += 1;
@@ -1148,7 +1561,15 @@ namespace WinForms.pressentation
                         itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
 
                         int pid = kv.Key;
-                        btnPlus.Click += (s, e) => { guestCart[pid]++; BuildCartView(); };
+                        btnPlus.Click += (s, e) => {
+                            if (guestCart[pid] + 1 > prod.StockQuantity)
+                            {
+                                ShowNotification($"Requested quantity is greater than available ({prod.StockQuantity})", false);
+                                return;
+                            }
+                            guestCart[pid]++;
+                            BuildCartView();
+                        };
                         btnMinus.Click += (s, e) => { guestCart[pid] = Math.Max(0, guestCart[pid] - 1); if (guestCart[pid] == 0) guestCart.Remove(pid); BuildCartView(); };
                         btnDel.Click += (s, e) => { guestCart.Remove(pid); BuildCartView(); };
 
@@ -1244,6 +1665,11 @@ namespace WinForms.pressentation
                     btnPlus.Click += (s, e) =>
                     {
                         var item = _db.CartProducts.Find(cpId);
+                        if (item.Quantity + 1 > item.Product.StockQuantity)
+                        {
+                            ShowNotification($"Requested quantity is greater than available ({item.Product.StockQuantity})", false);
+                            return;
+                        }
                         item.Quantity++;
                         _db.SaveChanges();
                         RecalculateCartTotal(currentCart);
@@ -1285,18 +1711,30 @@ namespace WinForms.pressentation
             var btnCheckoutUser = CreateStyledButton("Place Order", new Point(12, 570), 140, 40);
             btnCheckoutUser.Click += (s, e) =>
             {
+                // التحقق من توفر جميع المنتجات قبل إنشاء الطلب
+                _db.Entry(currentCart).Collection(c => c.CartProducts).Load();
+                foreach (var cp in currentCart.CartProducts)
+                {
+                    _db.Entry(cp).Reference(c => c.Product).Load();
+                    if (cp.Quantity > cp.Product.StockQuantity)
+                    {
+                        ShowNotification($"Requested quantity of {cp.Product.Name} ({cp.Quantity}) is greater than available ({cp.Product.StockQuantity})", false);
+                        return;
+                    }
+                }
+
                 // create Order and ProductOrders
                 var newOrder = new Order
                 {
                     UserId = currentUser.Id,
                     OrderDate = DateTime.Now,
-                    OrderTotalPrice = currentCart.OrderTotalPrice
+                    OrderTotalPrice = currentCart.OrderTotalPrice,
+                    //Status = OrderStatus.Confirmed // إضافة حالة للطلب
                 };
                 _db.Orders.Add(newOrder);
                 _db.SaveChanges(); // ensure Order.Id set
 
-                // Add ProductOrders
-                _db.Entry(currentCart).Collection(c => c.CartProducts).Load();
+                // Add ProductOrders وخصم الكميات من المخزون
                 foreach (var cp in currentCart.CartProducts)
                 {
                     var po = new ProductOrder
@@ -1307,6 +1745,11 @@ namespace WinForms.pressentation
                         CreatedAt = DateTime.Now
                     };
                     _db.ProductOrders.Add(po);
+
+                    // خصم الكمية من المخزون
+                    var product = _db.Products.Find(cp.ProductId);
+                    product.StockQuantity -= cp.Quantity;
+                    _db.Products.Update(product);
                 }
 
                 // clear cart
@@ -1657,6 +2100,19 @@ namespace WinForms.pressentation
                     }
                 }
             };
+        }
+
+        #endregion
+
+        #region Enum for Order Status
+
+        public enum OrderStatus
+        {
+            Pending,
+            Confirmed,
+            Shipped,
+            Delivered,
+            Cancelled
         }
 
         #endregion

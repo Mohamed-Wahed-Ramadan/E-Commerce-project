@@ -40,6 +40,11 @@ namespace WinForms.pressentation
             builder.RegisterType<ProductRepository>().As<IProductRepository>();
             #endregion
 
+            #region Cart
+            builder.RegisterType<CartService>().As<ICartServices>();
+            builder.RegisterType<CartRepository>().As<ICartRepository>();
+            #endregion
+
             return builder.Build();
 
         }

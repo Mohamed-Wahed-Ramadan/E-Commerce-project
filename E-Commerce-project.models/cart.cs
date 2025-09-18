@@ -11,6 +11,7 @@ namespace E_Commerce_project.models
     {
         public int orderNumber {  get; set; }
         public int UserId { get; set; }
+
         public User.User User { get; set; }
         public List<CartProduct> CartProducts { get; set; }
         public decimal OrderTotalPrice { get; set; }

@@ -15,6 +15,6 @@ namespace E_Commerce_project.models
         public int UserId { get; set; }
         public User.User User { get; set; }
         public List<ProductOrder> ProductOrders { get; set; }
-
+        //public global::WinForms.pressentation.Form1.OrderStatus Status { get; set; }
     }
 }
