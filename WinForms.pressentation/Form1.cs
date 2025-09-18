@@ -44,6 +44,10 @@ namespace WinForms.pressentation
         private Dictionary<int, int> guestCart = new();
         private FlowLayoutPanel productsFlow;
 
+        // Search and Filter controls
+        private TextBox searchTextBox;
+        private ComboBox categoryComboBox;
+
         // Animation variables
         private System.Windows.Forms.Timer animationTimer;
         private int animationCounter = 0;
@@ -55,8 +59,9 @@ namespace WinForms.pressentation
         private Color backgroundColor = Color.FromArgb(216, 196, 182); // #D8C4B6 - Light beige
         private Color lightColor = Color.FromArgb(245, 239, 231);      // #F5EFE7 - Very light cream
         private Color textColor = Color.FromArgb(33, 53, 85);          // Dark text on light background
-        private Color successColor = Color.FromArgb(0, 255, 0);        // Keep original green for success
-        private Color errorColor = Color.FromArgb(255, 0, 0);          // Keep original red for error
+        private Color successColor = Color.FromArgb(0, 150, 0);        // Darker green for success
+        private Color errorColor = Color.FromArgb(200, 0, 0);          // Darker red for error
+        private Color warningColor = Color.FromArgb(255, 165, 0);      // Orange for warnings
 
         // Logo path - Updated to use project structure
         private string logoPath;
@@ -79,12 +84,12 @@ namespace WinForms.pressentation
             logoPath = Path.Combine(projectRoot, "images", "logo.png");
 
             this.Text = "E-Commerce App";
-            this.Width = 1200;
-            this.Height = 800;
+            this.Width = 1400;  // Increased width
+            this.Height = 900;  // Increased height
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = backgroundColor;
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.Sizable;  // Allow resizing
+            this.MinimumSize = new Size(1200, 800);  // Set minimum size
 
             // Load logo
             try
@@ -143,7 +148,7 @@ namespace WinForms.pressentation
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(10)
+                Padding = new Padding(15)
             };
 
             pnlFooter = new Panel
@@ -178,28 +183,39 @@ namespace WinForms.pressentation
             };
             pnlHeader.Controls.Add(lblTitle);
 
-            // top-right quick buttons with modern style
+            // top-right quick buttons with modern style - Better positioning for larger form
             var buttons = new List<Button>();
 
-            var btnHome = CreateModernButton("Home", 800);
+            var btnHome = CreateModernButton("Home", this.Width - 480);
             btnHome.Click += (s, e) => ShowHomeView();
             buttons.Add(btnHome);
 
-            var btnCart = CreateModernButton("Cart", 880);
+            var btnCart = CreateModernButton("Cart", this.Width - 400);
             btnCart.Click += (s, e) => ShowCartView();
             buttons.Add(btnCart);
 
-            var btnOrders = CreateModernButton("Orders", 960);
+            var btnOrders = CreateModernButton("Orders", this.Width - 320);
             btnOrders.Click += (s, e) => ShowOrdersView();
             buttons.Add(btnOrders);
 
-            var btnUser = CreateModernButton("User: Guest", 640);
+            var btnUser = CreateModernButton("User: Guest", this.Width - 640);
             btnUser.Click += (s, e) =>
             {
                 if (currentUser == null) ShowChooseView();
-                else MessageBox.Show($"Logged in as: {currentUser.Email} ({currentUser.UserName})");
+                else MessageBox.Show($"Logged in as: {currentUser.Email} ({currentUser.UserName})", "User Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
             buttons.Add(btnUser);
+
+            // Handle form resize to reposition buttons
+            this.Resize += (s, e) => {
+                if (buttons.Count >= 4)
+                {
+                    buttons[0].Location = new Point(this.Width - 480, 22);  // Home
+                    buttons[1].Location = new Point(this.Width - 400, 22);  // Cart
+                    buttons[2].Location = new Point(this.Width - 320, 22);  // Orders
+                    buttons[3].Location = new Point(this.Width - 640, 22);  // User
+                }
+            };
 
             foreach (var btn in buttons)
             {
@@ -234,7 +250,8 @@ namespace WinForms.pressentation
                 ForeColor = textColor,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                Padding = new Padding(5)
+                Padding = new Padding(8, 5, 8, 5),  // Better padding
+                MinimumSize = new Size(70, 36)
             };
 
             // Add hover effects
@@ -264,14 +281,15 @@ namespace WinForms.pressentation
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(20)
+                Padding = new Padding(30),
+                AutoScroll = true
             };
 
             var lbl = new Label
             {
                 Text = "Welcome to E-Commerce App",
-                Font = new Font("Segoe UI", 18, FontStyle.Bold),
-                Location = new Point(20, 20),
+                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                Location = new Point(30, 30),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
@@ -281,15 +299,15 @@ namespace WinForms.pressentation
             {
                 Text = "Please choose an option to continue",
                 Font = new Font("Segoe UI", 12),
-                Location = new Point(20, 60),
+                Location = new Point(30, 75),
                 AutoSize = true,
                 ForeColor = textColor
             };
             viewChoose.Controls.Add(subLbl);
 
-            var btnLogin = CreateStyledButton("Login", new Point(20, 120), 160, 45);
-            var btnRegister = CreateStyledButton("Register", new Point(200, 120), 160, 45);
-            var btnGuest = CreateStyledButton("Browse as Guest", new Point(380, 120), 180, 45);
+            var btnLogin = CreateStyledButton("Login", new Point(30, 130), 180, 50);
+            var btnRegister = CreateStyledButton("Register", new Point(230, 130), 180, 50);
+            var btnGuest = CreateStyledButton("Browse as Guest", new Point(430, 130), 200, 50);
 
             viewChoose.Controls.AddRange(new Control[] { btnLogin, btnRegister, btnGuest });
 
@@ -303,63 +321,92 @@ namespace WinForms.pressentation
                 UpdateHeaderUser();
             };
 
-            // Home view (product listing)
+            // Home view (product listing) - Improved layout
             viewHome = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(10)
+                Padding = new Padding(15),
+                AutoScroll = true
             };
 
-            // Search panel at the top
-            var searchPanel = new Panel
-            {
-                Dock = DockStyle.Top,
-                Height = 60,
-                BackColor = backgroundColor,
-                Padding = new Padding(5)
-            };
+            // Search and Filter panel with borders
+            var searchFilterPanel = CreateBorderedPanel(secondaryColor, 2);
+            searchFilterPanel.Dock = DockStyle.Top;
+            searchFilterPanel.Height = 80;
+            searchFilterPanel.BackColor = lightColor;
+            searchFilterPanel.Padding = new Padding(15);
 
             var searchLabel = new Label
             {
                 Text = "Search Products:",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = primaryColor,
-                Location = new Point(10, 15),
-                AutoSize = true
+                Location = new Point(15, 15),
+                Size = new Size(120, 23),
+                TextAlign = ContentAlignment.MiddleLeft
             };
-            searchPanel.Controls.Add(searchLabel);
+            searchFilterPanel.Controls.Add(searchLabel);
 
-            var searchTextBox = new TextBox
+            searchTextBox = new TextBox
             {
                 Name = "txtSearch",
                 Location = new Point(140, 12),
-                Width = 300,
-                Height = 35,
-                Font = new Font("Segoe UI", 11),
+                Width = 250,
+                Height = 30,
+                Font = new Font("Segoe UI", 10),
                 BorderStyle = BorderStyle.FixedSingle,
                 BackColor = Color.White,
                 ForeColor = textColor
             };
-            searchPanel.Controls.Add(searchTextBox);
+            searchFilterPanel.Controls.Add(searchTextBox);
 
-            var searchButton = CreateStyledButton("Search", new Point(460, 10), 80, 35);
+            var categoryLabel = new Label
+            {
+                Text = "Category:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = primaryColor,
+                Location = new Point(410, 15),
+                Size = new Size(70, 23),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            searchFilterPanel.Controls.Add(categoryLabel);
+
+            categoryComboBox = new ComboBox
+            {
+                Location = new Point(485, 12),
+                Width = 180,
+                Height = 30,
+                Font = new Font("Segoe UI", 10),
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                BackColor = Color.White,
+                ForeColor = textColor
+            };
+            LoadCategories();
+            searchFilterPanel.Controls.Add(categoryComboBox);
+
+            var searchButton = CreateStyledButton("Search", new Point(680, 10), 80, 35);
             searchButton.Click += (s, e) => {
                 string searchTerm = searchTextBox.Text.Trim();
-                LoadProducts(searchTerm);
+                int? categoryId = null;
+                if (categoryComboBox.SelectedItem is Category selectedCategory && selectedCategory.Id != -1)
+                {
+                    categoryId = selectedCategory.Id;
+                }
+                LoadProducts(searchTerm, categoryId);
             };
-            searchPanel.Controls.Add(searchButton);
+            searchFilterPanel.Controls.Add(searchButton);
 
-            var clearButton = CreateStyledButton("Clear", new Point(550, 10), 80, 35);
+            var clearButton = CreateStyledButton("Clear", new Point(770, 10), 80, 35);
             clearButton.Click += (s, e) => {
                 searchTextBox.Text = "";
+                categoryComboBox.SelectedIndex = 0; // Select "All Categories"
                 LoadProducts();
             };
-            searchPanel.Controls.Add(clearButton);
+            searchFilterPanel.Controls.Add(clearButton);
 
             // Add real-time search on text change
             searchTextBox.TextChanged += (s, e) => {
-                // Debounce search to avoid too many calls
                 var timer = searchTextBox.Tag as System.Windows.Forms.Timer;
                 if (timer != null)
                 {
@@ -368,56 +415,101 @@ namespace WinForms.pressentation
                 }
 
                 timer = new System.Windows.Forms.Timer();
-                timer.Interval = 300; // 300ms delay
+                timer.Interval = 500; // 500ms delay
                 timer.Tick += (sender, args) => {
                     timer.Stop();
                     timer.Dispose();
                     string searchTerm = searchTextBox.Text.Trim();
-                    LoadProducts(searchTerm);
+                    int? categoryId = null;
+                    if (categoryComboBox.SelectedItem is Category selectedCategory && selectedCategory.Id != -1)
+                    {
+                        categoryId = selectedCategory.Id;
+                    }
+                    LoadProducts(searchTerm, categoryId);
                 };
                 timer.Start();
                 searchTextBox.Tag = timer;
             };
 
-            viewHome.Controls.Add(searchPanel);
+            // Category filter change event
+            categoryComboBox.SelectedIndexChanged += (s, e) => {
+                string searchTerm = searchTextBox.Text.Trim();
+                int? categoryId = null;
+                if (categoryComboBox.SelectedItem is Category selectedCategory && selectedCategory.Id != -1)
+                {
+                    categoryId = selectedCategory.Id;
+                }
+                LoadProducts(searchTerm, categoryId);
+            };
+
+            viewHome.Controls.Add(searchFilterPanel);
 
             productsFlow = new FlowLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 AutoScroll = true,
-                Padding = new Padding(12),
+                Padding = new Padding(15),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 BackColor = backgroundColor
             };
             viewHome.Controls.Add(productsFlow);
 
-            // Cart view
+            // Cart view - Improved sizing
             viewCart = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(10)
+                Padding = new Padding(20),
+                AutoScroll = true
             };
 
-            // Orders view
+            // Orders view - Improved sizing
             viewOrders = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(10)
+                Padding = new Padding(20),
+                AutoScroll = true
             };
 
-            // Admin view
+            // Admin view - Improved sizing
             viewAdmin = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = backgroundColor,
-                Padding = new Padding(10)
+                Padding = new Padding(20),
+                AutoScroll = true
             };
 
             // add views to body (we'll show/hide)
             pnlBody.Controls.AddRange(new Control[] { viewChoose, viewHome, viewCart, viewOrders, viewAdmin });
+        }
+
+        private void LoadCategories()
+        {
+            try
+            {
+                categoryComboBox.Items.Clear();
+
+                // Add "All Categories" option
+                categoryComboBox.Items.Add(new Category { Id = -1, Name = "All Categories" });
+                categoryComboBox.DisplayMember = "Name";
+                categoryComboBox.ValueMember = "Id";
+
+                // Add actual categories
+                var categories = _categoryService.GetAllCategory();
+                foreach (var category in categories)
+                {
+                    categoryComboBox.Items.Add(category);
+                }
+
+                categoryComboBox.SelectedIndex = 0; // Select "All Categories" by default
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Error loading categories: {ex.Message}", false);
+            }
         }
 
         private Button CreateStyledButton(string text, Point location, int width, int height)
@@ -432,7 +524,8 @@ namespace WinForms.pressentation
                 BackColor = lightColor,  // #F5EFE7
                 ForeColor = textColor,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                TextAlign = ContentAlignment.MiddleCenter
             };
 
             // Add hover effects
@@ -528,9 +621,9 @@ namespace WinForms.pressentation
 
         private void ShowAdminView()
         {
-            if (currentUser == null || currentUser.Email != "admin@iti.eg")
+            if (currentUser == null || currentUser.Role != UserRole.Admin)
             {
-                ShowNotification("Admin page only for admin user (admin@iti.eg).", false);
+                ShowNotification("Admin page only for admin users.", false);
                 return;
             }
             ShowViewWithAnimation(viewAdmin);
@@ -543,46 +636,105 @@ namespace WinForms.pressentation
 
         private void BuildAuthForm(bool isLogin)
         {
-            // small popup-like panel inside viewChoose
+            // Improved popup-like panel inside viewChoose
             var pnl = new Panel
             {
-                Size = new Size(450, 300),
-                Location = new Point(20, 120),
-                BorderStyle = BorderStyle.FixedSingle,
+                Size = new Size(500, 350),
+                Location = new Point(50, 150),
+                BorderStyle = BorderStyle.None,
                 BackColor = lightColor,
-                Padding = new Padding(15)
+                Padding = new Padding(20)
             };
+
+            // Add border to panel
+            pnl.Paint += (s, e) => {
+                ControlPaint.DrawBorder(e.Graphics, pnl.ClientRectangle,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid,
+                    secondaryColor, 2, ButtonBorderStyle.Solid);
+            };
+
             viewChoose.Controls.Add(pnl);
             pnl.BringToFront();
 
             pnl.Controls.Add(new Label
             {
                 Text = isLogin ? "Login" : "Register",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(10, 10),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             });
 
-            int yPos = 50;
-            pnl.Controls.Add(new Label { Text = "Email:", Location = new Point(10, yPos), AutoSize = true, ForeColor = textColor });
-            var txtEmail = new TextBox { Location = new Point(120, yPos - 4), Width = 290, Height = 30, BackColor = Color.White, ForeColor = textColor, BorderStyle = BorderStyle.FixedSingle };
+            int yPos = 70;
+            pnl.Controls.Add(new Label
+            {
+                Text = "Email:",
+                Location = new Point(20, yPos),
+                Size = new Size(80, 23),
+                Font = new Font("Segoe UI", 11),
+                ForeColor = textColor
+            });
+            var txtEmail = new TextBox
+            {
+                Location = new Point(110, yPos - 2),
+                Width = 350,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle
+            };
             pnl.Controls.Add(txtEmail);
 
             yPos += 50;
-            pnl.Controls.Add(new Label { Text = "Username:", Location = new Point(10, yPos), AutoSize = true, ForeColor = textColor });
-            var txtUser = new TextBox { Location = new Point(120, yPos - 4), Width = 290, Height = 30, BackColor = Color.White, ForeColor = textColor, BorderStyle = BorderStyle.FixedSingle };
+            pnl.Controls.Add(new Label
+            {
+                Text = "Username:",
+                Location = new Point(20, yPos),
+                Size = new Size(80, 23),
+                Font = new Font("Segoe UI", 11),
+                ForeColor = textColor
+            });
+            var txtUser = new TextBox
+            {
+                Location = new Point(110, yPos - 2),
+                Width = 350,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle
+            };
             pnl.Controls.Add(txtUser);
 
             yPos += 50;
-            pnl.Controls.Add(new Label { Text = "Password:", Location = new Point(10, yPos), AutoSize = true, ForeColor = textColor });
-            var txtPass = new TextBox { Location = new Point(120, yPos - 4), Width = 290, Height = 30, BackColor = Color.White, ForeColor = textColor, BorderStyle = BorderStyle.FixedSingle, UseSystemPasswordChar = true };
+            pnl.Controls.Add(new Label
+            {
+                Text = "Password:",
+                Location = new Point(20, yPos),
+                Size = new Size(80, 23),
+                Font = new Font("Segoe UI", 11),
+                ForeColor = textColor
+            });
+            var txtPass = new TextBox
+            {
+                Location = new Point(110, yPos - 2),
+                Width = 350,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle,
+                UseSystemPasswordChar = true
+            };
             pnl.Controls.Add(txtPass);
 
-            var btnSubmit = CreateStyledButton(isLogin ? "Login" : "Register", new Point(120, yPos + 50), 120, 35);
+            var btnSubmit = CreateStyledButton(isLogin ? "Login" : "Register", new Point(110, yPos + 60), 140, 40);
             pnl.Controls.Add(btnSubmit);
 
-            var btnCancel = CreateStyledButton("Cancel", new Point(260, yPos + 50), 100, 35);
+            var btnCancel = CreateStyledButton("Cancel", new Point(270, yPos + 60), 120, 40);
             pnl.Controls.Add(btnCancel);
 
             btnCancel.Click += (s, e) => { viewChoose.Controls.Remove(pnl); pnl.Dispose(); };
@@ -623,7 +775,7 @@ namespace WinForms.pressentation
                             ShowHomeView();
 
                             // if admin email -> open admin view
-                            if (currentUser.Email == "admin@iti.eg") ShowAdminView();
+                            if (currentUser.Role == UserRole.Admin) ShowAdminView();
                         }
                         else
                         {
@@ -681,7 +833,6 @@ namespace WinForms.pressentation
             {
                 btnUser.Text = currentUser == null ? "User: Guest" : $"User: {currentUser.UserName}";
 
-                // تغيير لون نص اسم المستخدم إذا كان مسجل دخول
                 if (currentUser != null)
                 {
                     btnUser.BackColor = Color.FromArgb(240, 235, 225);
@@ -699,7 +850,7 @@ namespace WinForms.pressentation
 
         #region Products / Home - Using ProductService
 
-        private void LoadProducts(string searchTerm = "")
+        private void LoadProducts(string searchTerm = "", int? categoryId = null)
         {
             productsFlow.Controls.Clear();
 
@@ -707,13 +858,21 @@ namespace WinForms.pressentation
             {
                 IEnumerable<Product> products;
 
-                if (string.IsNullOrEmpty(searchTerm))
+                if (string.IsNullOrEmpty(searchTerm) && categoryId == null)
                 {
                     products = _productService.GetAllProduct();
                 }
-                else
+                else if (!string.IsNullOrEmpty(searchTerm) && categoryId == null)
                 {
                     products = _productService.SearchProducts(searchTerm);
+                }
+                else if (string.IsNullOrEmpty(searchTerm) && categoryId != null)
+                {
+                    products = _productService.GetAllProduct().Where(p => p.CategoryId == categoryId);
+                }
+                else
+                {
+                    products = _productService.SearchProducts(searchTerm).Where(p => p.CategoryId == categoryId);
                 }
 
                 foreach (var p in products)
@@ -727,7 +886,7 @@ namespace WinForms.pressentation
                 {
                     var noResultsLabel = new Label
                     {
-                        Text = string.IsNullOrEmpty(searchTerm) ? "No products available." : $"No products found for '{searchTerm}'",
+                        Text = GetNoResultsMessage(searchTerm, categoryId),
                         Font = new Font("Segoe UI", 12, FontStyle.Italic),
                         ForeColor = textColor,
                         AutoSize = true,
@@ -742,12 +901,34 @@ namespace WinForms.pressentation
             }
         }
 
+        private string GetNoResultsMessage(string searchTerm, int? categoryId)
+        {
+            if (string.IsNullOrEmpty(searchTerm) && categoryId == null)
+            {
+                return "No products available.";
+            }
+            else if (!string.IsNullOrEmpty(searchTerm) && categoryId == null)
+            {
+                return $"No products found for '{searchTerm}'";
+            }
+            else if (string.IsNullOrEmpty(searchTerm) && categoryId != null)
+            {
+                var categoryName = categoryComboBox.SelectedItem is Category cat ? cat.Name : "selected category";
+                return $"No products found in {categoryName}";
+            }
+            else
+            {
+                var categoryName = categoryComboBox.SelectedItem is Category cat ? cat.Name : "selected category";
+                return $"No products found for '{searchTerm}' in {categoryName}";
+            }
+        }
+
         private Control BuildProductCard(Product p)
         {
             var card = new Panel
             {
-                Width = 260,
-                Height = 350,
+                Width = 280,
+                Height = 400,
                 Margin = new Padding(15),
                 BackColor = lightColor,
                 BorderStyle = BorderStyle.None,
@@ -779,7 +960,7 @@ namespace WinForms.pressentation
             var pb = new PictureBox
             {
                 Location = new Point(10, 10),
-                Size = new Size(240, 160),
+                Size = new Size(260, 180),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Cursor = Cursors.Hand,
                 BackColor = Color.White
@@ -816,13 +997,14 @@ namespace WinForms.pressentation
             var lblName = new Label
             {
                 Text = p.Name,
-                Location = new Point(10, 180),
+                Location = new Point(10, 200),
                 AutoSize = false,
-                Width = 240,
+                Width = 260,
                 Height = 24,
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 Cursor = Cursors.Hand,
-                ForeColor = primaryColor
+                ForeColor = primaryColor,
+                TextAlign = ContentAlignment.TopLeft
             };
             lblName.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblName);
@@ -830,11 +1012,12 @@ namespace WinForms.pressentation
             var lblDesc = new Label
             {
                 Text = p.Description ?? "",
-                Location = new Point(10, 210),
-                Size = new Size(240, 48),
+                Location = new Point(10, 230),
+                Size = new Size(260, 48),
                 AutoEllipsis = true,
                 Cursor = Cursors.Hand,
-                ForeColor = textColor
+                ForeColor = textColor,
+                Font = new Font("Segoe UI", 9)
             };
             lblDesc.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblDesc);
@@ -842,7 +1025,7 @@ namespace WinForms.pressentation
             var lblPrice = new Label
             {
                 Text = $"Price: {p.Price:N2} EGP",
-                Location = new Point(10, 265),
+                Location = new Point(10, 285),
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 ForeColor = secondaryColor,
@@ -851,36 +1034,69 @@ namespace WinForms.pressentation
             lblPrice.Click += (s, e) => ShowProductDetails(p);
             card.Controls.Add(lblPrice);
 
-            var btnAdd = new Button
+            // Stock status label
+            var stockStatusLabel = new Label
             {
-                Text = "Add to Cart",
-                Location = new Point(130, 260),
-                Width = 120,
-                Height = 32,
-                FlatStyle = FlatStyle.Flat,
-                BackColor = lightColor,
-                ForeColor = textColor,
+                Location = new Point(10, 310),
+                AutoSize = true,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
 
-            // Add hover effects to button
-            btnAdd.MouseEnter += (s, e) => {
-                btnAdd.BackColor = Color.FromArgb(240, 235, 225);
-                btnAdd.FlatAppearance.BorderColor = primaryColor;
-                btnAdd.FlatAppearance.BorderSize = 2;
+            if (p.StockQuantity > 0)
+            {
+                stockStatusLabel.Text = $"In Stock ({p.StockQuantity})";
+                stockStatusLabel.ForeColor = successColor;
+            }
+            else
+            {
+                stockStatusLabel.Text = "Out of Stock";
+                stockStatusLabel.ForeColor = errorColor;
+            }
+
+            stockStatusLabel.Click += (s, e) => ShowProductDetails(p);
+            card.Controls.Add(stockStatusLabel);
+
+            var btnAdd = new Button
+            {
+                Text = p.StockQuantity > 0 ? "Add to Cart" : "Out of Stock",
+                Location = new Point(140, 305),
+                Width = 130,
+                Height = 35,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = p.StockQuantity > 0 ? lightColor : Color.LightGray,
+                ForeColor = p.StockQuantity > 0 ? textColor : Color.Gray,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Cursor = p.StockQuantity > 0 ? Cursors.Hand : Cursors.Default,
+                Enabled = p.StockQuantity > 0
             };
 
-            btnAdd.MouseLeave += (s, e) => {
-                btnAdd.BackColor = lightColor;
+            // Add hover effects to button only if enabled
+            if (p.StockQuantity > 0)
+            {
+                btnAdd.MouseEnter += (s, e) => {
+                    btnAdd.BackColor = Color.FromArgb(240, 235, 225);
+                    btnAdd.FlatAppearance.BorderColor = primaryColor;
+                    btnAdd.FlatAppearance.BorderSize = 2;
+                };
+
+                btnAdd.MouseLeave += (s, e) => {
+                    btnAdd.BackColor = lightColor;
+                    btnAdd.FlatAppearance.BorderColor = secondaryColor;
+                    btnAdd.FlatAppearance.BorderSize = 1;
+                };
+
                 btnAdd.FlatAppearance.BorderColor = secondaryColor;
                 btnAdd.FlatAppearance.BorderSize = 1;
-            };
 
-            btnAdd.FlatAppearance.BorderColor = secondaryColor;
-            btnAdd.FlatAppearance.BorderSize = 1;
+                btnAdd.Click += (s, e) => AddToCart(p);
+            }
+            else
+            {
+                btnAdd.FlatAppearance.BorderColor = Color.Gray;
+                btnAdd.FlatAppearance.BorderSize = 1;
+            }
 
-            btnAdd.Click += (s, e) => AddToCart(p);
             card.Controls.Add(btnAdd);
 
             return card;
@@ -892,8 +1108,8 @@ namespace WinForms.pressentation
             var detailForm = new Form
             {
                 Text = product.Name,
-                Width = 600,
-                Height = 500,
+                Width = 700,
+                Height = 600,
                 StartPosition = FormStartPosition.CenterParent,
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 MaximizeBox = false,
@@ -905,7 +1121,7 @@ namespace WinForms.pressentation
             var mainPanel = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(20),
+                Padding = new Padding(25),
                 BackColor = backgroundColor
             };
             detailForm.Controls.Add(mainPanel);
@@ -913,8 +1129,8 @@ namespace WinForms.pressentation
             // Product image
             var pictureBox = new PictureBox
             {
-                Size = new Size(250, 250),
-                Location = new Point(20, 20),
+                Size = new Size(300, 300),
+                Location = new Point(25, 25),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 BorderStyle = BorderStyle.FixedSingle,
                 BackColor = Color.White
@@ -949,32 +1165,55 @@ namespace WinForms.pressentation
             mainPanel.Controls.Add(pictureBox);
 
             // Product details
-            int rightColumnX = 300;
-            int yPos = 20;
+            int rightColumnX = 350;
+            int yPos = 25;
 
             var nameLabel = new Label
             {
                 Text = product.Name,
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
                 Location = new Point(rightColumnX, yPos),
-                AutoSize = true,
+                Size = new Size(300, 30),
                 ForeColor = primaryColor
             };
             mainPanel.Controls.Add(nameLabel);
 
-            yPos += 40;
+            yPos += 45;
 
             var priceLabel = new Label
             {
                 Text = $"Price: {product.Price:N2} EGP",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 Location = new Point(rightColumnX, yPos),
                 AutoSize = true,
                 ForeColor = secondaryColor
             };
             mainPanel.Controls.Add(priceLabel);
 
-            yPos += 40;
+            yPos += 45;
+
+            // Stock status
+            var stockLabel = new Label
+            {
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Location = new Point(rightColumnX, yPos),
+                AutoSize = true
+            };
+
+            if (product.StockQuantity > 0)
+            {
+                stockLabel.Text = $"✓ In Stock ({product.StockQuantity} available)";
+                stockLabel.ForeColor = successColor;
+            }
+            else
+            {
+                stockLabel.Text = "✗ Out of Stock";
+                stockLabel.ForeColor = errorColor;
+            }
+
+            mainPanel.Controls.Add(stockLabel);
+
+            yPos += 45;
 
             var descLabel = new Label
             {
@@ -994,36 +1233,40 @@ namespace WinForms.pressentation
                 Multiline = true,
                 ReadOnly = true,
                 Location = new Point(rightColumnX, yPos),
-                Size = new Size(250, 100),
+                Size = new Size(300, 120),
                 BorderStyle = BorderStyle.FixedSingle,
                 BackColor = Color.White,
                 ForeColor = textColor,
-                Font = new Font("Segoe UI", 10)
+                Font = new Font("Segoe UI", 10),
+                ScrollBars = ScrollBars.Vertical
             };
             mainPanel.Controls.Add(descText);
 
-            yPos += 120;
+            yPos += 140;
 
-            var stockLabel = new Label
+            var addButton = CreateStyledButton(
+                product.StockQuantity > 0 ? "Add to Cart" : "Out of Stock",
+                new Point(rightColumnX, yPos),
+                140, 40
+            );
+
+            if (product.StockQuantity > 0)
             {
-                Text = $"In Stock: {product.StockQuantity}",
-                Font = new Font("Segoe UI", 11),
-                Location = new Point(rightColumnX, yPos),
-                AutoSize = true,
-                ForeColor = textColor
-            };
-            mainPanel.Controls.Add(stockLabel);
+                addButton.Click += (s, e) => {
+                    AddToCart(product);
+                    detailForm.Close();
+                };
+            }
+            else
+            {
+                addButton.Enabled = false;
+                addButton.BackColor = Color.LightGray;
+                addButton.ForeColor = Color.Gray;
+            }
 
-            yPos += 40;
-
-            var addButton = CreateStyledButton("Add to Cart", new Point(rightColumnX, yPos), 120, 35);
-            addButton.Click += (s, e) => {
-                AddToCart(product);
-                detailForm.Close();
-            };
             mainPanel.Controls.Add(addButton);
 
-            var closeButton = CreateStyledButton("Close", new Point(rightColumnX + 130, yPos), 120, 35);
+            var closeButton = CreateStyledButton("Close", new Point(rightColumnX + 150, yPos), 140, 40);
             closeButton.Click += (s, e) => detailForm.Close();
             mainPanel.Controls.Add(closeButton);
 
@@ -1038,7 +1281,7 @@ namespace WinForms.pressentation
                 g.Clear(Color.White);
                 using var sf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
                 var rc = new Rectangle(0, 0, width, height);
-                using var f = new Font("Segoe UI", 12, FontStyle.Bold);
+                using var f = new Font("Segoe UI", Math.Min(width, height) / 10, FontStyle.Bold);
                 g.DrawString(text, f, new SolidBrush(primaryColor), rc, sf);
             }
             return bmp;
@@ -1106,13 +1349,13 @@ namespace WinForms.pressentation
             var notification = new Label
             {
                 Text = message,
-                BackColor = Color.Black,  // Keep black background as requested
+                BackColor = Color.Black,
                 ForeColor = isSuccess ? successColor : errorColor,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Height = 40,
-                Width = 300,
-                Location = new Point((this.Width - 300) / 2, -40),
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Height = 50,
+                Width = 350,
+                Location = new Point((this.Width - 350) / 2, -50),
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 BorderStyle = BorderStyle.FixedSingle
             };
 
@@ -1121,19 +1364,19 @@ namespace WinForms.pressentation
 
             // Animate notification sliding down and up
             var timer = new System.Windows.Forms.Timer();
-            timer.Interval = 10;
+            timer.Interval = 15;
             int counter = 0;
             timer.Tick += (s, e) => {
                 counter++;
-                if (counter <= 20)
+                if (counter <= 25)
                 {
-                    notification.Top += 2;
+                    notification.Top += 3;
                 }
-                else if (counter > 50 && counter <= 70)
+                else if (counter > 80 && counter <= 105)
                 {
-                    notification.Top -= 2;
+                    notification.Top -= 3;
                 }
-                else if (counter > 70)
+                else if (counter > 105)
                 {
                     timer.Stop();
                     this.Controls.Remove(notification);
@@ -1149,9 +1392,9 @@ namespace WinForms.pressentation
 
             var title = new Label
             {
-                Text = "Your Cart",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                Location = new Point(12, 12),
+                Text = "Your Shopping Cart",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
@@ -1159,8 +1402,8 @@ namespace WinForms.pressentation
 
             var pnlItems = new Panel
             {
-                Location = new Point(12, 48),
-                Size = new Size(940, 520),
+                Location = new Point(20, 60),
+                Size = new Size(Math.Max(1000, this.Width - 80), Math.Max(500, this.Height - 220)),
                 AutoScroll = true,
                 BorderStyle = BorderStyle.None,
                 BackColor = backgroundColor
@@ -1174,10 +1417,10 @@ namespace WinForms.pressentation
                 {
                     pnlItems.Controls.Add(new Label
                     {
-                        Text = "Your (guest) cart is empty.",
+                        Text = "Your cart is empty.",
                         Location = new Point(10, 10),
                         AutoSize = true,
-                        Font = new Font("Segoe UI", 11),
+                        Font = new Font("Segoe UI", 12),
                         ForeColor = textColor
                     });
                 }
@@ -1185,6 +1428,8 @@ namespace WinForms.pressentation
                 {
                     int y = 10;
                     var products = _productService.GetAllProduct();
+                    decimal totalPrice = 0;
+
                     foreach (var kv in guestCart)
                     {
                         var prod = products.FirstOrDefault(p => p.Id == kv.Key);
@@ -1192,53 +1437,56 @@ namespace WinForms.pressentation
 
                         var itemPanel = CreateBorderedPanel(secondaryColor);
                         itemPanel.Location = new Point(10, y);
-                        itemPanel.Size = new Size(900, 60);
+                        itemPanel.Size = new Size(Math.Min(950, pnlItems.Width - 40), 80);
                         itemPanel.BackColor = lightColor;
                         pnlItems.Controls.Add(itemPanel);
 
                         var lbl = new Label
                         {
                             Text = $"{prod.Name}",
-                            Location = new Point(10, 10),
-                            AutoSize = true,
-                            Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                            Location = new Point(15, 15),
+                            Size = new Size(200, 25),
+                            Font = new Font("Segoe UI", 11, FontStyle.Bold),
                             ForeColor = primaryColor
                         };
                         itemPanel.Controls.Add(lbl);
 
                         var lblQty = new Label
                         {
-                            Text = $"Qty: {kv.Value}",
-                            Location = new Point(10, 35),
-                            AutoSize = true,
-                            Font = new Font("Segoe UI", 9),
+                            Text = $"Quantity: {kv.Value}",
+                            Location = new Point(15, 45),
+                            Size = new Size(100, 20),
+                            Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
                         itemPanel.Controls.Add(lblQty);
 
                         var lblPrice = new Label
                         {
-                            Text = $"Price: {prod.Price:N2} EGP",
-                            Location = new Point(200, 10),
-                            AutoSize = true,
+                            Text = $"Unit Price: {prod.Price:N2} EGP",
+                            Location = new Point(230, 15),
+                            Size = new Size(150, 25),
                             Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
                         itemPanel.Controls.Add(lblPrice);
 
+                        decimal itemTotal = prod.Price * kv.Value;
+                        totalPrice += itemTotal;
+
                         var lblTotal1 = new Label
                         {
-                            Text = $"Total: {(prod.Price * kv.Value):N2} EGP",
-                            Location = new Point(200, 35),
-                            AutoSize = true,
+                            Text = $"Total: {itemTotal:N2} EGP",
+                            Location = new Point(230, 45),
+                            Size = new Size(150, 20),
                             Font = new Font("Segoe UI", 10, FontStyle.Bold),
                             ForeColor = secondaryColor
                         };
                         itemPanel.Controls.Add(lblTotal1);
 
-                        var btnPlus = CreateCartButton("+", 400, 15, Color.LightGreen);
-                        var btnMinus = CreateCartButton("-", 440, 15, Color.LightCoral);
-                        var btnDel = CreateCartButton("Delete", 480, 15, Color.FromArgb(255, 100, 100));
+                        var btnPlus = CreateCartButton("+", 450, 20, successColor);
+                        var btnMinus = CreateCartButton("-", 490, 20, warningColor);
+                        var btnDel = CreateCartButton("Remove", 530, 20, errorColor);
 
                         itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
 
@@ -1294,11 +1542,22 @@ namespace WinForms.pressentation
                             }
                         };
 
-                        y += 70;
+                        y += 90;
                     }
+
+                    // Show total for guest cart
+                    var guestTotalLabel = new Label
+                    {
+                        Text = $"Cart Total: {totalPrice:N2} EGP",
+                        Location = new Point(20, y + 10),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                        ForeColor = secondaryColor
+                    };
+                    pnlItems.Controls.Add(guestTotalLabel);
                 }
 
-                var btnCheckout = CreateStyledButton("Checkout (register/login required)", new Point(12, 580), 300, 40);
+                var btnCheckout = CreateStyledButton("Checkout (Login Required)", new Point(20, pnlItems.Bottom + 20), 250, 45);
                 btnCheckout.Click += (s, e) => {
                     ShowNotification("Please register or login to complete checkout.", false);
                     ShowChooseView();
@@ -1319,7 +1578,7 @@ namespace WinForms.pressentation
                         Text = "Your cart is empty.",
                         Location = new Point(10, 10),
                         AutoSize = true,
-                        Font = new Font("Segoe UI", 11),
+                        Font = new Font("Segoe UI", 12),
                         ForeColor = textColor
                     });
                 }
@@ -1332,35 +1591,35 @@ namespace WinForms.pressentation
 
                         var itemPanel = CreateBorderedPanel(secondaryColor);
                         itemPanel.Location = new Point(10, y);
-                        itemPanel.Size = new Size(900, 60);
+                        itemPanel.Size = new Size(Math.Min(950, pnlItems.Width - 40), 80);
                         itemPanel.BackColor = lightColor;
                         pnlItems.Controls.Add(itemPanel);
 
                         var lbl = new Label
                         {
                             Text = $"{prod.Name}",
-                            Location = new Point(10, 10),
-                            AutoSize = true,
-                            Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                            Location = new Point(15, 15),
+                            Size = new Size(200, 25),
+                            Font = new Font("Segoe UI", 11, FontStyle.Bold),
                             ForeColor = primaryColor
                         };
                         itemPanel.Controls.Add(lbl);
 
                         var lblQty = new Label
                         {
-                            Text = $"Qty: {cp.Quantity}",
-                            Location = new Point(10, 35),
-                            AutoSize = true,
-                            Font = new Font("Segoe UI", 9),
+                            Text = $"Quantity: {cp.Quantity}",
+                            Location = new Point(15, 45),
+                            Size = new Size(100, 20),
+                            Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
                         itemPanel.Controls.Add(lblQty);
 
                         var lblPrice = new Label
                         {
-                            Text = $"Price: {prod.Price:N2} EGP",
-                            Location = new Point(200, 10),
-                            AutoSize = true,
+                            Text = $"Unit Price: {prod.Price:N2} EGP",
+                            Location = new Point(230, 15),
+                            Size = new Size(150, 25),
                             Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
@@ -1369,16 +1628,16 @@ namespace WinForms.pressentation
                         var lblTotal2 = new Label
                         {
                             Text = $"Total: {(prod.Price * cp.Quantity):N2} EGP",
-                            Location = new Point(200, 35),
-                            AutoSize = true,
+                            Location = new Point(230, 45),
+                            Size = new Size(150, 20),
                             Font = new Font("Segoe UI", 10, FontStyle.Bold),
                             ForeColor = secondaryColor
                         };
                         itemPanel.Controls.Add(lblTotal2);
 
-                        var btnPlus = CreateCartButton("+", 400, 15, Color.LightGreen);
-                        var btnMinus = CreateCartButton("-", 440, 15, Color.LightCoral);
-                        var btnDel = CreateCartButton("Delete", 480, 15, Color.FromArgb(255, 100, 100));
+                        var btnPlus = CreateCartButton("+", 450, 20, successColor);
+                        var btnMinus = CreateCartButton("-", 490, 20, warningColor);
+                        var btnDel = CreateCartButton("Remove", 530, 20, errorColor);
 
                         itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
 
@@ -1483,26 +1742,32 @@ namespace WinForms.pressentation
                             }
                         };
 
-                        y += 70;
+                        y += 90;
                     }
                 }
 
                 // show total + checkout
                 var lblTotal = new Label
                 {
-                    Text = $"Total: {currentCart.OrderTotalPrice:N2} EGP",
-                    Location = new Point(12, 540),
+                    Text = $"Cart Total: {currentCart?.OrderTotalPrice ?? 0:N2} EGP",
+                    Location = new Point(20, pnlItems.Bottom + 10),
                     AutoSize = true,
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 16, FontStyle.Bold),
                     ForeColor = secondaryColor
                 };
                 viewCart.Controls.Add(lblTotal);
 
-                var btnCheckoutUser = CreateStyledButton("Place Order", new Point(12, 570), 140, 40);
+                var btnCheckoutUser = CreateStyledButton("Place Order", new Point(20, lblTotal.Bottom + 15), 180, 45);
                 btnCheckoutUser.Click += (s, e) =>
                 {
                     try
                     {
+                        if (currentCart == null || currentCart.CartProducts == null || currentCart.CartProducts.Count == 0)
+                        {
+                            ShowNotification("Your cart is empty.", false);
+                            return;
+                        }
+
                         // Use OrderService to create order
                         var order = _orderService.CreateOrder(currentCart);
                         if (order != null)
@@ -1539,12 +1804,13 @@ namespace WinForms.pressentation
             {
                 Text = text,
                 Location = new Point(x, y),
-                Width = text == "Delete" ? 80 : 30,
-                Height = 30,
+                Width = text == "Remove" ? 90 : 35,
+                Height = 35,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = backColor,
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Cursor = Cursors.Hand
             };
 
             // Add hover effect
@@ -1568,9 +1834,9 @@ namespace WinForms.pressentation
             viewOrders.Controls.Clear();
             var title = new Label
             {
-                Text = "Your Orders",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                Location = new Point(12, 12),
+                Text = "Your Order History",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
@@ -1578,8 +1844,8 @@ namespace WinForms.pressentation
 
             var pnl = new Panel
             {
-                Location = new Point(12, 48),
-                Size = new Size(940, 560),
+                Location = new Point(20, 60),
+                Size = new Size(Math.Max(1000, this.Width - 80), Math.Max(600, this.Height - 150)),
                 AutoScroll = true,
                 BorderStyle = BorderStyle.None,
                 BackColor = backgroundColor
@@ -1591,9 +1857,9 @@ namespace WinForms.pressentation
                 pnl.Controls.Add(new Label
                 {
                     Text = "Please login to view your orders.",
-                    Location = new Point(10, 10),
+                    Location = new Point(15, 15),
                     AutoSize = true,
-                    Font = new Font("Segoe UI", 11),
+                    Font = new Font("Segoe UI", 12),
                     ForeColor = textColor
                 });
                 return;
@@ -1611,61 +1877,72 @@ namespace WinForms.pressentation
                     pnl.Controls.Add(new Label
                     {
                         Text = "You haven't placed any orders yet.",
-                        Location = new Point(10, 10),
+                        Location = new Point(15, 15),
                         AutoSize = true,
-                        Font = new Font("Segoe UI", 11),
+                        Font = new Font("Segoe UI", 12),
                         ForeColor = textColor
                     });
                     return;
                 }
 
-                int y = 10;
+                int y = 15;
                 foreach (var o in orders)
                 {
-                    var orderPanel = CreateBorderedPanel(secondaryColor);
-                    orderPanel.Location = new Point(10, y);
-                    orderPanel.Size = new Size(900, 100);
+                    var orderPanel = CreateBorderedPanel(secondaryColor, 2);
+                    orderPanel.Location = new Point(15, y);
+                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(120, 80 + (o.ProductOrder.Count * 25)));
                     orderPanel.BackColor = lightColor;
+                    orderPanel.Padding = new Padding(15);
                     pnl.Controls.Add(orderPanel);
 
                     var lbl = new Label
                     {
-                        Text = $"Order #{o.Id} - Date: {o.OrderDate:g}",
-                        Location = new Point(10, 10),
-                        AutoSize = true,
-                        Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                        Text = $"Order #{o.Id} - {o.OrderDate:dddd, MMMM dd, yyyy 'at' h:mm tt}",
+                        Location = new Point(15, 15),
+                        Size = new Size(orderPanel.Width - 30, 25),
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold),
                         ForeColor = primaryColor
                     };
                     orderPanel.Controls.Add(lbl);
 
                     var lblTotal = new Label
                     {
-                        Text = $"Total: {o.OrderTotalPrice:N2} EGP",
-                        Location = new Point(10, 40),
+                        Text = $"Total Amount: {o.OrderTotalPrice:N2} EGP",
+                        Location = new Point(15, 45),
                         AutoSize = true,
-                        Font = new Font("Segoe UI", 11),
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold),
                         ForeColor = secondaryColor
                     };
                     orderPanel.Controls.Add(lblTotal);
 
-                    // list items
-                    int itemY = 70;
+                    // List items header
+                    var itemsHeader = new Label
+                    {
+                        Text = "Items Ordered:",
+                        Location = new Point(15, 75),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                        ForeColor = primaryColor
+                    };
+                    orderPanel.Controls.Add(itemsHeader);
+
+                    // List items
+                    int itemY = 100;
                     foreach (var po in o.ProductOrder)
                     {
                         var lblItem = new Label
                         {
-                            Text = $"   {po.Product?.Name ?? "Unknown Product"} x{po.Quantity}",
-                            Location = new Point(14, itemY),
-                            AutoSize = true,
+                            Text = $"• {po.Product?.Name ?? "Unknown Product"} × {po.Quantity} = {((po.Product?.Price ?? 0) * po.Quantity):N2} EGP",
+                            Location = new Point(30, itemY),
+                            Size = new Size(orderPanel.Width - 60, 22),
                             Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
                         orderPanel.Controls.Add(lblItem);
-                        itemY += 22;
+                        itemY += 25;
                     }
 
-                    orderPanel.Height = itemY + 10;
-                    y += orderPanel.Height + 10;
+                    y += orderPanel.Height + 15;
                 }
             }
             catch (Exception ex)
@@ -1680,20 +1957,33 @@ namespace WinForms.pressentation
             var lbl = new Label
             {
                 Text = "Admin Panel",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                Location = new Point(12, 12),
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
             viewAdmin.Controls.Add(lbl);
 
-            // categories management simple
-            var btnManageProducts = CreateStyledButton("Manage Products", new Point(12, 60), 180, 45);
-            var btnManageCategories = CreateStyledButton("Manage Categories", new Point(200, 60), 180, 45);
-            viewAdmin.Controls.AddRange(new Control[] { btnManageProducts, btnManageCategories });
+            var subtitle = new Label
+            {
+                Text = "Manage your e-commerce platform",
+                Font = new Font("Segoe UI", 12),
+                Location = new Point(20, 55),
+                AutoSize = true,
+                ForeColor = textColor
+            };
+            viewAdmin.Controls.Add(subtitle);
+
+            // Management buttons with better spacing
+            var btnManageProducts = CreateStyledButton("Manage Products", new Point(20, 100), 200, 50);
+            var btnManageCategories = CreateStyledButton("Manage Categories", new Point(240, 100), 200, 50);
+            var btnViewAllOrders = CreateStyledButton("View All Orders", new Point(460, 100), 200, 50);
+
+            viewAdmin.Controls.AddRange(new Control[] { btnManageProducts, btnManageCategories, btnViewAllOrders });
 
             btnManageProducts.Click += (s, e) => BuildAdminProductsEditor();
             btnManageCategories.Click += (s, e) => BuildAdminCategoriesEditor();
+            btnViewAllOrders.Click += (s, e) => BuildAdminOrdersView();
         }
 
         private void BuildAdminProductsEditor()
@@ -1701,9 +1991,9 @@ namespace WinForms.pressentation
             viewAdmin.Controls.Clear();
             var title = new Label
             {
-                Text = "Products Editor",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(12, 12),
+                Text = "Products Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
@@ -1711,8 +2001,8 @@ namespace WinForms.pressentation
 
             var dgv = new DataGridView
             {
-                Location = new Point(12, 48),
-                Size = new Size(760, 500),
+                Location = new Point(20, 60),
+                Size = new Size(Math.Max(900, this.Width - 300), Math.Max(500, this.Height - 200)),
                 ReadOnly = false,
                 AllowUserToAddRows = false,
                 AutoGenerateColumns = false,
@@ -1732,11 +2022,13 @@ namespace WinForms.pressentation
                     Font = new Font("Segoe UI", 10)
                 }
             };
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Id", DataPropertyName = "Id", ReadOnly = true, Width = 40 });
+
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "ID", DataPropertyName = "Id", ReadOnly = true, Width = 50 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Name", DataPropertyName = "Name", Width = 200 });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 240 });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Price", DataPropertyName = "Price", Width = 80 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 300 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Price", DataPropertyName = "Price", Width = 100 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Stock", DataPropertyName = "StockQuantity", Width = 80 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Image Path", DataPropertyName = "ImagePath", Width = 150 });
 
             try
             {
@@ -1750,20 +2042,35 @@ namespace WinForms.pressentation
 
             viewAdmin.Controls.Add(dgv);
 
-            var btnSave = CreateAdminButton("Save Changes", 780, 48);
-            var btnAdd = CreateAdminButton("Add New", 780, 90);
-            var btnDelete = CreateAdminButton("Delete Selected", 780, 132);
-            var btnBack = CreateAdminButton("Back", 780, 174);
+            int buttonX = dgv.Right + 20;
+            var btnSave = CreateAdminButton("Save Changes", buttonX, 60);
+            var btnAdd = CreateAdminButton("Add New Product", buttonX, 110);
+            var btnDelete = CreateAdminButton("Delete Selected", buttonX, 160);
+            var btnRefresh = CreateAdminButton("Refresh", buttonX, 210);
+            var btnBack = CreateAdminButton("Back to Admin", buttonX, 260);
 
-            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnDelete, btnBack });
+            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnDelete, btnRefresh, btnBack });
 
             btnBack.Click += (s, e) => BuildAdminView();
+
+            btnRefresh.Click += (s, e) =>
+            {
+                try
+                {
+                    var products = _productService.GetAllProduct();
+                    dgv.DataSource = new BindingSource { DataSource = products };
+                    ShowNotification("Products refreshed.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification($"Error refreshing products: {ex.Message}", false);
+                }
+            };
 
             btnSave.Click += (s, e) =>
             {
                 try
                 {
-                    // Save grid edits to DB
                     foreach (DataGridViewRow row in dgv.Rows)
                     {
                         if (row.DataBoundItem is Product p)
@@ -1772,7 +2079,7 @@ namespace WinForms.pressentation
                         }
                     }
                     _productService.saveProduct();
-                    ShowNotification("Saved products.", true);
+                    ShowNotification("Product changes saved successfully.", true);
                 }
                 catch (Exception ex)
                 {
@@ -1787,15 +2094,16 @@ namespace WinForms.pressentation
                     var newP = new Product
                     {
                         Name = "New Product",
-                        Description = "",
+                        Description = "Enter description here",
                         Price = 0m,
                         StockQuantity = 0,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        ImagePath = ""
                     };
                     _productService.AddProduct(newP);
                     _productService.saveProduct();
-                    dgv.DataSource = _productService.GetAllProduct();
-                    ShowNotification("Product added.", true);
+                    dgv.DataSource = new BindingSource { DataSource = _productService.GetAllProduct() };
+                    ShowNotification("New product added successfully.", true);
                 }
                 catch (Exception ex)
                 {
@@ -1807,14 +2115,14 @@ namespace WinForms.pressentation
             {
                 if (dgv.CurrentRow?.DataBoundItem is Product p)
                 {
-                    if (MessageBox.Show("Delete product?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (MessageBox.Show($"Are you sure you want to delete '{p.Name}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
                         {
                             _productService.DeleteProduct(p);
                             _productService.saveProduct();
-                            dgv.DataSource = _productService.GetAllProduct();
-                            ShowNotification("Product deleted.", true);
+                            dgv.DataSource = new BindingSource { DataSource = _productService.GetAllProduct() };
+                            ShowNotification("Product deleted successfully.", true);
                         }
                         catch (Exception ex)
                         {
@@ -1822,12 +2130,16 @@ namespace WinForms.pressentation
                         }
                     }
                 }
+                else
+                {
+                    ShowNotification("Please select a product to delete.", false);
+                }
             };
         }
 
         private Button CreateAdminButton(string text, int x, int y)
         {
-            return CreateStyledButton(text, new Point(x, y), 160, 35);
+            return CreateStyledButton(text, new Point(x, y), 180, 40);
         }
 
         private void BuildAdminCategoriesEditor()
@@ -1835,9 +2147,9 @@ namespace WinForms.pressentation
             viewAdmin.Controls.Clear();
             var title = new Label
             {
-                Text = "Categories Editor",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(12, 12),
+                Text = "Categories Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
                 AutoSize = true,
                 ForeColor = primaryColor
             };
@@ -1845,8 +2157,8 @@ namespace WinForms.pressentation
 
             var dgv = new DataGridView
             {
-                Location = new Point(12, 48),
-                Size = new Size(760, 500),
+                Location = new Point(20, 60),
+                Size = new Size(Math.Max(800, this.Width - 300), Math.Max(500, this.Height - 200)),
                 ReadOnly = false,
                 AllowUserToAddRows = false,
                 AutoGenerateColumns = false,
@@ -1866,9 +2178,10 @@ namespace WinForms.pressentation
                     Font = new Font("Segoe UI", 10)
                 }
             };
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Id", DataPropertyName = "Id", ReadOnly = true, Width = 40 });
+
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "ID", DataPropertyName = "Id", ReadOnly = true, Width = 50 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Name", DataPropertyName = "Name", Width = 200 });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 420 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 450 });
 
             try
             {
@@ -1881,14 +2194,30 @@ namespace WinForms.pressentation
 
             viewAdmin.Controls.Add(dgv);
 
-            var btnSave = CreateAdminButton("Save Changes", 780, 48);
-            var btnAdd = CreateAdminButton("Add New", 780, 90);
-            var btnDelete = CreateAdminButton("Delete Selected", 780, 132);
-            var btnBack = CreateAdminButton("Back", 780, 174);
+            int buttonX = dgv.Right + 20;
+            var btnSave = CreateAdminButton("Save Changes", buttonX, 60);
+            var btnAdd = CreateAdminButton("Add New Category", buttonX, 110);
+            var btnDelete = CreateAdminButton("Delete Selected", buttonX, 160);
+            var btnRefresh = CreateAdminButton("Refresh", buttonX, 210);
+            var btnBack = CreateAdminButton("Back to Admin", buttonX, 260);
 
-            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnDelete, btnBack });
+            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnDelete, btnRefresh, btnBack });
 
             btnBack.Click += (s, e) => BuildAdminView();
+
+            btnRefresh.Click += (s, e) =>
+            {
+                try
+                {
+                    dgv.DataSource = new BindingSource { DataSource = _categoryService.GetAllCategory() };
+                    LoadCategories(); // Refresh the category filter dropdown too
+                    ShowNotification("Categories refreshed.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification($"Error refreshing categories: {ex.Message}", false);
+                }
+            };
 
             btnSave.Click += (s, e) =>
             {
@@ -1902,7 +2231,8 @@ namespace WinForms.pressentation
                         }
                     }
                     _categoryService.SaveCategory();
-                    ShowNotification("Saved categories.", true);
+                    LoadCategories(); // Refresh the category filter dropdown
+                    ShowNotification("Category changes saved successfully.", true);
                 }
                 catch (Exception ex)
                 {
@@ -1914,11 +2244,17 @@ namespace WinForms.pressentation
             {
                 try
                 {
-                    var c = new Category { Name = "New Category", Description = "", CreatedAt = DateTime.Now };
+                    var c = new Category
+                    {
+                        Name = "New Category",
+                        Description = "Enter description here",
+                        CreatedAt = DateTime.Now
+                    };
                     _categoryService.AddCategory(c);
                     _categoryService.SaveCategory();
-                    dgv.DataSource = _categoryService.GetAllCategory();
-                    ShowNotification("Category added.", true);
+                    dgv.DataSource = new BindingSource { DataSource = _categoryService.GetAllCategory() };
+                    LoadCategories(); // Refresh the category filter dropdown
+                    ShowNotification("New category added successfully.", true);
                 }
                 catch (Exception ex)
                 {
@@ -1930,14 +2266,15 @@ namespace WinForms.pressentation
             {
                 if (dgv.CurrentRow?.DataBoundItem is Category c)
                 {
-                    if (MessageBox.Show("Delete category?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (MessageBox.Show($"Are you sure you want to delete '{c.Name}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         try
                         {
                             _categoryService.DeleteCategory(c);
                             _categoryService.SaveCategory();
-                            dgv.DataSource = _categoryService.GetAllCategory();
-                            ShowNotification("Category deleted.", true);
+                            dgv.DataSource = new BindingSource { DataSource = _categoryService.GetAllCategory() };
+                            LoadCategories(); // Refresh the category filter dropdown
+                            ShowNotification("Category deleted successfully.", true);
                         }
                         catch (Exception ex)
                         {
@@ -1945,7 +2282,133 @@ namespace WinForms.pressentation
                         }
                     }
                 }
+                else
+                {
+                    ShowNotification("Please select a category to delete.", false);
+                }
             };
+        }
+
+        private void BuildAdminOrdersView()
+        {
+            viewAdmin.Controls.Clear();
+            var title = new Label
+            {
+                Text = "All Orders Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true,
+                ForeColor = primaryColor
+            };
+            viewAdmin.Controls.Add(title);
+
+            var pnl = new Panel
+            {
+                Location = new Point(20, 60),
+                Size = new Size(Math.Max(1000, this.Width - 80), Math.Max(600, this.Height - 150)),
+                AutoScroll = true,
+                BorderStyle = BorderStyle.Fixed3D,
+                BackColor = Color.White
+            };
+            viewAdmin.Controls.Add(pnl);
+
+            var btnBack = CreateAdminButton("Back to Admin", 20, pnl.Bottom + 10);
+            btnBack.Click += (s, e) => BuildAdminView();
+            viewAdmin.Controls.Add(btnBack);
+
+            try
+            {
+                var orders = _orderService.GetAllOrders()
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToList();
+
+                if (orders.Count == 0)
+                {
+                    pnl.Controls.Add(new Label
+                    {
+                        Text = "No orders found in the system.",
+                        Location = new Point(15, 15),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 12),
+                        ForeColor = textColor
+                    });
+                    return;
+                }
+
+                int y = 15;
+                foreach (var o in orders)
+                {
+                    var orderPanel = CreateBorderedPanel(secondaryColor, 2);
+                    orderPanel.Location = new Point(15, y);
+                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(140, 100 + (o.ProductOrder.Count * 25)));
+                    orderPanel.BackColor = lightColor;
+                    orderPanel.Padding = new Padding(15);
+                    pnl.Controls.Add(orderPanel);
+
+                    var headerLbl = new Label
+                    {
+                        Text = $"Order #{o.Id} - Customer: {o.User?.Email ?? "Unknown"}",
+                        Location = new Point(15, 15),
+                        Size = new Size(orderPanel.Width - 30, 25),
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                        ForeColor = primaryColor
+                    };
+                    orderPanel.Controls.Add(headerLbl);
+
+                    var dateLbl = new Label
+                    {
+                        Text = $"Date: {o.OrderDate:dddd, MMMM dd, yyyy 'at' h:mm tt}",
+                        Location = new Point(15, 45),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 10),
+                        ForeColor = textColor
+                    };
+                    orderPanel.Controls.Add(dateLbl);
+
+                    var totalLbl = new Label
+                    {
+                        Text = $"Total: {o.OrderTotalPrice:N2} EGP",
+                        Location = new Point(15, 70),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                        ForeColor = secondaryColor
+                    };
+                    orderPanel.Controls.Add(totalLbl);
+
+                    // Items header
+                    var itemsHeader = new Label
+                    {
+                        Text = "Order Items:",
+                        Location = new Point(15, 100),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                        ForeColor = primaryColor
+                    };
+                    orderPanel.Controls.Add(itemsHeader);
+
+                    // List items
+                    int itemY = 125;
+                    foreach (var po in o.ProductOrder)
+                    {
+                        var lblItem = new Label
+                        {
+                            Text = $"• {po.Product?.Name ?? "Unknown Product"} × {po.Quantity} = {((po.Product?.Price ?? 0) * po.Quantity):N2} EGP",
+                            Location = new Point(30, itemY),
+                            Size = new Size(orderPanel.Width - 60, 22),
+                            Font = new Font("Segoe UI", 9),
+                            ForeColor = textColor
+                        };
+                        orderPanel.Controls.Add(lblItem);
+                        itemY += 25;
+                    }
+
+                    y += orderPanel.Height + 15;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Error loading orders: {ex.Message}", false);
+            }
         }
 
         #endregion
