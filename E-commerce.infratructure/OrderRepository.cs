@@ -17,6 +17,28 @@ namespace E_commerce.infratructure
             _context = context;
         }
 
+        public void UpdateOrderStatus(Order order)
+        {
+            var confirmDate = DateTime.Now;
+            if (order.OrderDate > confirmDate.AddDays(2) && order.Status == OrderStatus.Pending)
+            {
+                order.Status = OrderStatus.Confirmed;
+            }
+            if (order.ReceiptDate == null && order.Status == OrderStatus.Confirmed)
+            {
+                order.Status = OrderStatus.Shipped;
+            }
+            else if (order.ReceiptDate != null && order.Status == OrderStatus.Confirmed)
+            {
+                order.Status = OrderStatus.Delivered;
+            }
+            else
+            {
+                order.Status = OrderStatus.Pending;
+            }
+
+
+        }
         public List<Order> GetAllOrders()
         {
             return _context.Orders.ToList();

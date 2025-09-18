@@ -107,6 +107,8 @@ namespace WinForms.pressentation
             BuildLayout();
             BuildViews();
             ShowChooseView();
+            CopyImagesToOutput();
+
         }
 
         #region Layout & Views
@@ -192,8 +194,10 @@ namespace WinForms.pressentation
             var btnUser = CreateModernButton("User: Guest", 640);
             btnUser.Click += (s, e) =>
             {
-                if (currentUser == null) ShowChooseView();
-                else MessageBox.Show($"Logged in as: {currentUser.Email} ({currentUser.UserName})");
+                if (currentUser == null)
+                    ShowChooseView();
+                else
+                    ShowUserInfoPopup(); // استدعاء الدالة الجديدة لعرض معلومات المستخدم
             };
             buttons.Add(btnUser);
 
@@ -205,7 +209,7 @@ namespace WinForms.pressentation
             // footer status
             var lblFooter = new Label
             {
-                Text = "© 2023 E-Commerce App. All rights reserved.",
+                Text = "© 2025 E-Commerce App. All rights reserved.",
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter,
                 ForeColor = lightColor,
@@ -216,7 +220,122 @@ namespace WinForms.pressentation
             // keep reference to update user button text
             pnlHeader.Tag = btnUser;
         }
+        private void ShowUserInfoPopup()
+        {
+            if (currentUser == null) return;
 
+            // إنشاء نموذج منبثق
+            var userInfoForm = new Form
+            {
+                Text = "User Information",
+                Width = 350,
+                Height = 250,
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = backgroundColor
+            };
+
+            // لوحة رئيسية
+            var mainPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20),
+                BackColor = backgroundColor
+            };
+            userInfoForm.Controls.Add(mainPanel);
+
+            // عنوان النافذة
+            var titleLabel = new Label
+            {
+                Text = "User Profile",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Location = new Point(20, 20),
+                AutoSize = true,
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(titleLabel);
+
+            // معلومات المستخدم
+            int yPos = 60;
+            mainPanel.Controls.Add(CreateInfoLabel("Username:", currentUser.UserName, 20, yPos));
+            yPos += 30;
+            mainPanel.Controls.Add(CreateInfoLabel("Email:", currentUser.Email, 20, yPos));
+            yPos += 30;
+            mainPanel.Controls.Add(CreateInfoLabel("Role:", currentUser.Role.ToString(), 20, yPos));
+            yPos += 30;
+
+            // إذا كان المستخدم مسؤولاً، أضف مؤشراً خاصاً
+            if (currentUser.Email == "admin@iti.eg")
+            {
+                var adminLabel = new Label
+                {
+                    Text = "Administrator Account",
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    ForeColor = Color.Red,
+                    Location = new Point(20, yPos),
+                    AutoSize = true
+                };
+                mainPanel.Controls.Add(adminLabel);
+                yPos += 30;
+            }
+
+            // زر تسجيل الخروج
+            var logoutButton = CreateStyledButton("Logout", new Point(20, yPos + 10), 120, 35);
+            logoutButton.Click += (s, e) =>
+            {
+                LogoutUser();
+                userInfoForm.Close();
+            };
+            mainPanel.Controls.Add(logoutButton);
+
+            // زر الإغلاق
+            var closeButton = CreateStyledButton("Close", new Point(150, yPos + 10), 120, 35);
+            closeButton.Click += (s, e) => userInfoForm.Close();
+            mainPanel.Controls.Add(closeButton);
+
+            userInfoForm.ShowDialog();
+        }
+
+        // دالة مساعدة لإنشاء تسميات المعلومات
+        private Label CreateInfoLabel(string labelText, string value, int x, int y)
+        {
+            return new Label
+            {
+                Text = $"{labelText} {value}",
+                Font = new Font("Segoe UI", 11),
+                Location = new Point(x, y),
+                AutoSize = true,
+                ForeColor = textColor
+            };
+        }
+
+        private void LogoutUser()
+        {
+            // حفظ عربة التسكير للضيف إذا كان هناك منتجات
+            if (guestCart.Count > 0)
+            {
+                var result = MessageBox.Show("You have items in your guest cart. Do you want to save them for next time?", "Guest Cart", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                {
+                    guestCart.Clear();
+                }
+            }
+
+            // تسجيل الخروج
+            currentUser = null;
+            currentCart = null;
+
+            // تحديث واجهة المستخدم
+            UpdateHeaderUser();
+
+            // عرض إشعار
+            ShowNotification("Logged out successfully.", true);
+
+            // العودة إلى شاشة الاختيار
+            ShowChooseView();
+        }
         private Button CreateModernButton(string text, int xPos)
         {
             var btn = new Button
@@ -329,7 +448,29 @@ namespace WinForms.pressentation
             // add views to body (we'll show/hide)
             pnlBody.Controls.AddRange(new Control[] { viewChoose, viewHome, viewCart, viewOrders, viewAdmin });
         }
+        private void DebugImagePaths()
+        {
+            Console.WriteLine("Application Startup Path: " + Application.StartupPath);
+            Console.WriteLine("Executable Path: " + Application.ExecutablePath);
+            Console.WriteLine("Current Directory: " + Environment.CurrentDirectory);
 
+            string[] testPaths = {
+        Path.Combine(Application.StartupPath, "images"),
+        Path.Combine(Application.StartupPath, "..", "images"),
+        Path.Combine(Application.StartupPath, "..", "..", "images"),
+        Path.Combine(Application.StartupPath, "..", "..", "..", "images")
+    };
+
+            foreach (var path in testPaths)
+            {
+                Console.WriteLine("Checking path: " + path);
+                Console.WriteLine("Path exists: " + Directory.Exists(path));
+                if (Directory.Exists(path))
+                {
+                    Console.WriteLine("Files in directory: " + string.Join(", ", Directory.GetFiles(path)));
+                }
+            }
+        }
         private void BuildHomeViewWithSearch()
         {
             // Home view (product listing with search)
@@ -348,17 +489,21 @@ namespace WinForms.pressentation
             productsFlow = new FlowLayoutPanel
             {
                 Location = new Point(10, 130),
-                Size = new Size(1160, 530),
+                Size = new Size(viewHome.Width - 40, viewHome.Height - 150),
                 Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
                 AutoScroll = true,
-                AutoScrollMargin = new Size(10, 10),
-                Padding = new Padding(12),
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
-                BackColor = backgroundColor
+                BackColor = backgroundColor,
+                AutoScrollMargin = new Size(10, 10)
             };
 
             viewHome.Controls.Add(productsFlow);
+
+            // جعل لوحة المنتجات تتكيف مع تغيير حجم النافذة
+            viewHome.Resize += (s, e) => {
+                productsFlow.Size = new Size(viewHome.Width - 40, viewHome.Height - 150);
+            };
         }
 
         private Panel CreateSearchPanel()
@@ -812,16 +957,18 @@ namespace WinForms.pressentation
             {
                 btnUser.Text = currentUser == null ? "User: Guest" : $"User: {currentUser.UserName}";
 
-                // تغيير لون نص اسم المستخدم إذا كان مسجل دخول
+                // تغيير لون نص اسم المستخدم لو كان مسجل دخول
                 if (currentUser != null)
                 {
                     btnUser.BackColor = Color.FromArgb(240, 235, 225);
                     btnUser.Font = new Font(btnUser.Font, FontStyle.Bold | FontStyle.Italic);
+                    btnUser.ForeColor = primaryColor;
                 }
                 else
                 {
                     btnUser.BackColor = lightColor;
                     btnUser.Font = new Font(btnUser.Font, FontStyle.Bold);
+                    btnUser.ForeColor = textColor;
                 }
             }
         }
@@ -834,14 +981,20 @@ namespace WinForms.pressentation
         {
             productsFlow.Controls.Clear();
 
-            // تحميل جميع المنتجات
+            // إضافة هذه السطور لحل مشكلة التمرير
+            productsFlow.AutoScroll = true;
+            productsFlow.FlowDirection = FlowDirection.LeftToRight;
+            productsFlow.WrapContents = true;
+            productsFlow.AutoSize = false;
+
+            // بقية الكود الحالي...
             allProducts = _db.Products.OrderBy(p => p.Name).ToList();
             filteredProducts = new List<Product>(allProducts);
 
             // تحميل الفئات في ComboBox
             LoadCategories();
 
-            // عرض جميع المنتجات
+            // عرض كل المنتجات
             DisplayProducts(filteredProducts);
             UpdateResultsCounter(filteredProducts.Count, allProducts.Count);
         }
@@ -1004,6 +1157,7 @@ namespace WinForms.pressentation
             card.Click += (s, e) => ShowProductDetails(p);
 
             // صورة المنتج
+            // picture
             var pb = new PictureBox
             {
                 Location = new Point(10, 10),
@@ -1017,19 +1171,22 @@ namespace WinForms.pressentation
             {
                 try
                 {
-                    string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
-                    string imagePath = Path.Combine(projectRoot, "images", p.ImagePath);
+                    string imagePath = GetImagePath(p.ImagePath);
 
-                    if (File.Exists(imagePath))
+                    if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
                     {
                         pb.Image = Image.FromFile(imagePath);
                     }
                     else
                     {
                         pb.Image = GeneratePlaceholderImage(p.Name, pb.Width, pb.Height);
+                        Console.WriteLine($"Image not found: {p.ImagePath}");
                     }
                 }
-                catch { pb.Image = GeneratePlaceholderImage(p.Name, pb.Width, pb.Height); }
+                catch
+                {
+                    pb.Image = GeneratePlaceholderImage(p.Name, pb.Width, pb.Height);
+                }
             }
             else
             {
@@ -1139,7 +1296,32 @@ namespace WinForms.pressentation
             return card;
         }
 
+        private void CopyImagesToOutput()
+        {
+            string sourceImagesPath = Path.Combine(Application.StartupPath, "..", "..", "..", "images");
+            string destImagesPath = Path.Combine(Application.StartupPath, "images");
 
+            try
+            {
+                if (Directory.Exists(sourceImagesPath) && !Directory.Exists(destImagesPath))
+                {
+                    Directory.CreateDirectory(destImagesPath);
+
+                    foreach (var file in Directory.GetFiles(sourceImagesPath))
+                    {
+                        string destFile = Path.Combine(destImagesPath, Path.GetFileName(file));
+                        if (!File.Exists(destFile))
+                        {
+                            File.Copy(file, destFile);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error copying images: {ex.Message}");
+            }
+        }
         private void ShowProductDetails(Product product)
         {
             // Create a new form to show product details
@@ -1165,6 +1347,7 @@ namespace WinForms.pressentation
             detailForm.Controls.Add(mainPanel);
 
             // Product image
+            // Product image
             var pictureBox = new PictureBox
             {
                 Size = new Size(250, 250),
@@ -1178,22 +1361,23 @@ namespace WinForms.pressentation
             {
                 try
                 {
-                    // Get project root and build image path
-                    string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
-                    string imagePath = Path.Combine(projectRoot, "images", product.ImagePath);
+                    string imagePath = GetImagePath(product.ImagePath);
 
-                    if (File.Exists(imagePath))
+                    if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
                     {
                         pictureBox.Image = Image.FromFile(imagePath);
                     }
                     else
                     {
                         pictureBox.Image = GeneratePlaceholderImage(product.Name, pictureBox.Width, pictureBox.Height);
+                        // تسجيل تحذير للتصحيح
+                        Console.WriteLine($"Image not found: {product.ImagePath}");
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
                     pictureBox.Image = GeneratePlaceholderImage(product.Name, pictureBox.Width, pictureBox.Height);
+                    Console.WriteLine($"Error loading image: {ex.Message}");
                 }
             }
             else
@@ -1895,7 +2079,29 @@ namespace WinForms.pressentation
                 y += orderPanel.Height + 10;
             }
         }
+        private string GetImagePath(string imageFileName)
+        {
+            if (string.IsNullOrEmpty(imageFileName))
+                return null;
 
+            // عدة محاولات للعثور على الصورة في مواقع مختلفة
+            string[] possiblePaths = {
+        Path.Combine(Application.StartupPath, "images", imageFileName),
+        Path.Combine(Application.StartupPath, "..", "images", imageFileName),
+        Path.Combine(Application.StartupPath, "..", "..", "images", imageFileName),
+        Path.Combine(Application.StartupPath, "..", "..", "..", "images", imageFileName),
+        Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "images", imageFileName),
+        Path.Combine(Environment.CurrentDirectory, "images", imageFileName)
+    };
+
+            foreach (var path in possiblePaths)
+            {
+                if (File.Exists(path))
+                    return path;
+            }
+
+            return null;
+        }
         private void BuildAdminView()
         {
             viewAdmin.Controls.Clear();

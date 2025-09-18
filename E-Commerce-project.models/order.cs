@@ -10,6 +10,8 @@ namespace E_Commerce_project.models
     public class Order : BaseModel<int>
     {
         public decimal OrderTotalPrice { get; set; }
+        public OrderStatus Status { get; set; }
+
         public DateTime OrderDate { get; set; }
         public DateTime? ReceiptDate { get; set; }
         public int UserId { get; set; }

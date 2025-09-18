@@ -174,6 +174,9 @@ namespace E_Commerce.Context.Migrations
                     b.Property<DateTime?>("ReceiptDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
