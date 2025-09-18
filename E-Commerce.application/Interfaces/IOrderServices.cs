@@ -10,6 +10,7 @@ namespace E_Commerce.application.Interfaces
 {
     public interface IOrderServices
     {
+        void UpdateOrderStatus(int orderId, OrderStatus status);
         public IEnumerable<Order> GetAllOrders();
         public Order? CreateOrder(Cart cart);
 

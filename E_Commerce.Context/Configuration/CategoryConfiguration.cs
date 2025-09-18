@@ -15,12 +15,10 @@ namespace E_Commerce.Context.Configuration
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasData(
-                   new Category { Id = 1, Name = "Electronics", Description = "Devices and gadgets" },
-                   new Category { Id = 2, Name = "Clothes", Description = "Fashion and apparel" },
-                   new Category { Id = 3, Name = "Books", Description = "Educational and entertainment books" },
-                   new Category { Id = 4, Name = "Home Appliances", Description = "Appliances for home use" },
-                   new Category { Id = 5, Name = "Sports", Description = "Sports equipment and accessories" }
-               );
+                 new Category { Id = 1, Name = "Antiquities", Description = "Ancient statues and artifacts" },
+                 new Category { Id = 2, Name = "Jewelry", Description = "Precious gems and artifacts" },
+                 new Category { Id = 3, Name = "Metals", Description = "Bars and pieces of metal" }
+             );
         }
     }
 }

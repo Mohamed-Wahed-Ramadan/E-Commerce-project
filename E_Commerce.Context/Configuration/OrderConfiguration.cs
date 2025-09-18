@@ -21,6 +21,10 @@ namespace E_Commerce.Context.Configuration
             builder.HasOne(o => o.User)
                    .WithMany(u => u.Orders)
                    .HasForeignKey(o => o.UserId);
+
+            builder.Property(o => o.Status)
+                   .HasConversion<string>()
+                   .HasDefaultValue(OrderStatus.Pending);
         }
 
         

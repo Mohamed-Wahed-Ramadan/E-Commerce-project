@@ -1589,11 +1589,12 @@ namespace WinForms.pressentation
                         };
                         itemPanel.Controls.Add(lbl);
 
+                        // Update the quantity label width to accommodate larger numbers
                         var lblQty = new Label
                         {
                             Text = $"Quantity: {kv.Value}",
                             Location = new Point(15, 45),
-                            Size = new Size(100, 20),
+                            Size = new Size(120, 20),  // Increased width from 100 to 120
                             Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
@@ -1622,9 +1623,9 @@ namespace WinForms.pressentation
                         };
                         itemPanel.Controls.Add(lblTotal1);
 
-                        var btnPlus = CreateCartButton("+", 450, 20, successColor);
-                        var btnMinus = CreateCartButton("-", 490, 20, warningColor);
-                        var btnDel = CreateCartButton("Remove", 530, 20, errorColor);
+                        var btnPlus = CreateCartButton("+", 500, 20, successColor);  // Moved further right
+                        var btnMinus = CreateCartButton("-", 540, 20, warningColor);
+                        var btnDel = CreateCartButton("Remove", 580, 20, errorColor);
 
                         itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
 
@@ -1729,7 +1730,7 @@ namespace WinForms.pressentation
 
                         var itemPanel = CreateBorderedPanel(secondaryColor);
                         itemPanel.Location = new Point(10, y);
-                        itemPanel.Size = new Size(Math.Min(950, pnlItems.Width - 40), 80);
+                        itemPanel.Size = new Size(Math.Min(1000, pnlItems.Width - 40), 80);  // Increased width from 950 to 1000
                         itemPanel.BackColor = lightColor;
                         pnlItems.Controls.Add(itemPanel);
 
@@ -1743,15 +1744,16 @@ namespace WinForms.pressentation
                         };
                         itemPanel.Controls.Add(lbl);
 
-                        var lblQty = new Label
+                        // Update the quantity label width here too
+                        var lblQty2 = new Label
                         {
                             Text = $"Quantity: {cp.Quantity}",
                             Location = new Point(15, 45),
-                            Size = new Size(100, 20),
+                            Size = new Size(120, 20),  // Increased width from 100 to 120
                             Font = new Font("Segoe UI", 10),
                             ForeColor = textColor
                         };
-                        itemPanel.Controls.Add(lblQty);
+                        itemPanel.Controls.Add(lblQty2);
 
                         var lblPrice = new Label
                         {
@@ -1773,14 +1775,15 @@ namespace WinForms.pressentation
                         };
                         itemPanel.Controls.Add(lblTotal2);
 
-                        var btnPlus = CreateCartButton("+", 450, 20, successColor);
-                        var btnMinus = CreateCartButton("-", 490, 20, warningColor);
-                        var btnDel = CreateCartButton("Remove", 530, 20, errorColor);
+                        // For Persisted User Cart section -around line 1300
+                        var btnPlus2 = CreateCartButton("+", 500, 20, successColor);  // Moved further right
+                        var btnMinus2 = CreateCartButton("-", 540, 20, warningColor);
+                        var btnDel2 = CreateCartButton("Remove", 580, 20, errorColor);
 
-                        itemPanel.Controls.AddRange(new Control[] { btnPlus, btnMinus, btnDel });
+                        itemPanel.Controls.AddRange(new Control[] { btnPlus2, btnMinus2, btnDel2 });
 
                         int productId = cp.ProductId;
-                        btnPlus.Click += (s, e) =>
+                        btnPlus2.Click += (s, e) =>
                         {
                             try
                             {
@@ -1810,7 +1813,7 @@ namespace WinForms.pressentation
                                 ShowNotification($"Error updating cart: {ex.Message}", false);
                             }
                         };
-                        btnMinus.Click += (s, e) =>
+                        btnMinus2.Click += (s, e) =>
                         {
                             try
                             {
@@ -1850,7 +1853,7 @@ namespace WinForms.pressentation
                                 ShowNotification($"Error updating cart: {ex.Message}", false);
                             }
                         };
-                        btnDel.Click += (s, e) =>
+                        btnDel2.Click += (s, e) =>
                         {
                             try
                             {
@@ -1896,6 +1899,7 @@ namespace WinForms.pressentation
                 viewCart.Controls.Add(lblTotal);
 
                 var btnCheckoutUser = CreateStyledButton("Place Order", new Point(20, lblTotal.Bottom + 15), 180, 45);
+                // REPLACE THIS SECTION:
                 btnCheckoutUser.Click += (s, e) =>
                 {
                     try
@@ -1906,7 +1910,39 @@ namespace WinForms.pressentation
                             return;
                         }
 
-                        // Use OrderService to create order
+                        // Validate stock availability before creating order
+                        var products = _productService.GetAllProduct();
+                        foreach (var cartItem in currentCart.CartProducts)
+                        {
+                            var product = products.FirstOrDefault(p => p.Id == cartItem.ProductId);
+                            if (product == null)
+                            {
+                                ShowNotification($"Product not found in cart.", false);
+                                return;
+                            }
+
+                            if (product.StockQuantity < cartItem.Quantity)
+                            {
+                                ShowNotification($"Insufficient stock for {product.Name}. Available: {product.StockQuantity}, In cart: {cartItem.Quantity}", false);
+                                return;
+                            }
+                        }
+
+                        // Show confirmation dialog
+                        var totalAmount = currentCart.OrderTotalPrice;
+                        var confirmResult = MessageBox.Show(
+                            $"Place order for {totalAmount:N2} EGP?\n\nThis action cannot be undone.",
+                            "Confirm Order",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question
+                        );
+
+                        if (confirmResult != DialogResult.Yes)
+                        {
+                            return;
+                        }
+
+                        // Create the order
                         var order = _orderService.CreateOrder(currentCart);
                         if (order != null)
                         {
@@ -1914,20 +1950,37 @@ namespace WinForms.pressentation
                             _cartService.DeleteCart(currentCart);
                             currentCart = _cartService.GetCartByUserId(currentUser.Id);
 
-                            ShowNotification("Order placed successfully!", true);
-                            BuildCartView();
-                            ShowOrdersView();
+                            ShowNotification($"Order #{order.Id} placed successfully!", true);
+                            BuildCartView(); // Refresh cart view
+
+                            // Show order confirmation dialog
+                            var viewOrderResult = MessageBox.Show(
+                                $"Order #{order.Id} has been placed successfully!\n\nWould you like to view your orders?",
+                                "Order Confirmed",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information
+                            );
+
+                            if (viewOrderResult == DialogResult.Yes)
+                            {
+                                ShowOrdersView();
+                            }
                         }
                         else
                         {
-                            ShowNotification("Error creating order.", false);
+                            ShowNotification("Error creating order. Please try again.", false);
                         }
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        ShowNotification(ex.Message, false);
                     }
                     catch (Exception ex)
                     {
                         ShowNotification($"Error placing order: {ex.Message}", false);
                     }
                 };
+
                 viewCart.Controls.Add(btnCheckoutUser);
             }
             catch (Exception ex)
@@ -2028,7 +2081,7 @@ namespace WinForms.pressentation
                 {
                     var orderPanel = CreateBorderedPanel(secondaryColor, 2);
                     orderPanel.Location = new Point(15, y);
-                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(120, 80 + (o.ProductOrder.Count * 25)));
+                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(150, 110 + (o.ProductOrder.Count * 25)));
                     orderPanel.BackColor = lightColor;
                     orderPanel.Padding = new Padding(15);
                     pnl.Controls.Add(orderPanel);
@@ -2043,10 +2096,43 @@ namespace WinForms.pressentation
                     };
                     orderPanel.Controls.Add(lbl);
 
+                    // Order Status with color coding
+                    var statusLabel = new Label
+                    {
+                        Text = $"Status: {o.Status}",
+                        Location = new Point(15, 45),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 11, FontStyle.Bold)
+                    };
+
+                    // Color code based on status
+                    switch (o.Status.ToString().ToLower())
+                    {
+                        case "pending":
+                            statusLabel.ForeColor = warningColor;
+                            break;
+                        case "processing":
+                            statusLabel.ForeColor = Color.FromArgb(0, 123, 255); // Blue
+                            break;
+                        case "shipped":
+                            statusLabel.ForeColor = Color.FromArgb(255, 193, 7); // Yellow/Gold
+                            break;
+                        case "delivered":
+                            statusLabel.ForeColor = successColor;
+                            break;
+                        case "cancelled":
+                            statusLabel.ForeColor = errorColor;
+                            break;
+                        default:
+                            statusLabel.ForeColor = textColor;
+                            break;
+                    }
+                    orderPanel.Controls.Add(statusLabel);
+
                     var lblTotal = new Label
                     {
                         Text = $"Total Amount: {o.OrderTotalPrice:N2} EGP",
-                        Location = new Point(15, 45),
+                        Location = new Point(15, 75),
                         AutoSize = true,
                         Font = new Font("Segoe UI", 12, FontStyle.Bold),
                         ForeColor = secondaryColor
@@ -2057,7 +2143,7 @@ namespace WinForms.pressentation
                     var itemsHeader = new Label
                     {
                         Text = "Items Ordered:",
-                        Location = new Point(15, 75),
+                        Location = new Point(15, 105),
                         AutoSize = true,
                         Font = new Font("Segoe UI", 11, FontStyle.Bold),
                         ForeColor = primaryColor
@@ -2065,7 +2151,7 @@ namespace WinForms.pressentation
                     orderPanel.Controls.Add(itemsHeader);
 
                     // List items
-                    int itemY = 100;
+                    int itemY = 130;
                     foreach (var po in o.ProductOrder)
                     {
                         var lblItem = new Label
@@ -2088,7 +2174,6 @@ namespace WinForms.pressentation
                 ShowNotification($"Error loading orders: {ex.Message}", false);
             }
         }
-
         private void BuildAdminView()
         {
             viewAdmin.Controls.Clear();
@@ -2124,6 +2209,9 @@ namespace WinForms.pressentation
             btnViewAllOrders.Click += (s, e) => BuildAdminOrdersView();
         }
 
+
+        #region Enhanced Admin Products Management
+
         private void BuildAdminProductsEditor()
         {
             viewAdmin.Controls.Clear();
@@ -2137,16 +2225,57 @@ namespace WinForms.pressentation
             };
             viewAdmin.Controls.Add(title);
 
+            // Search panel
+            var searchPanel = CreateBorderedPanel(secondaryColor, 2);
+            searchPanel.Location = new Point(20, 60);
+            searchPanel.Size = new Size(Math.Max(900, this.Width - 300), 60);
+            searchPanel.BackColor = lightColor;
+            searchPanel.Padding = new Padding(15);
+            viewAdmin.Controls.Add(searchPanel);
+
+            var searchLabel = new Label
+            {
+                Text = "Search Products:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = primaryColor,
+                Location = new Point(15, 18),
+                Size = new Size(120, 23),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+            searchPanel.Controls.Add(searchLabel);
+
+            var adminSearchTextBox = new TextBox
+            {
+                Name = "txtAdminSearch",
+                Location = new Point(140, 15),
+                Width = 300,
+                Height = 30,
+                Font = new Font("Segoe UI", 10),
+                BorderStyle = BorderStyle.FixedSingle,
+                BackColor = Color.White,
+                ForeColor = textColor
+            };
+            searchPanel.Controls.Add(adminSearchTextBox);
+
+            var searchButton = CreateStyledButton("Search", new Point(460, 13), 80, 35);
+            var clearSearchButton = CreateStyledButton("Clear", new Point(550, 13), 80, 35);
+
+            searchPanel.Controls.Add(searchButton);
+            searchPanel.Controls.Add(clearSearchButton);
+
+            // DataGridView for products
             var dgv = new DataGridView
             {
-                Location = new Point(20, 60),
-                Size = new Size(Math.Max(900, this.Width - 300), Math.Max(500, this.Height - 200)),
+                Name = "dgvProducts",
+                Location = new Point(20, 130),
+                Size = new Size(Math.Max(900, this.Width - 300), Math.Max(400, this.Height - 270)),
                 ReadOnly = false,
                 AllowUserToAddRows = false,
                 AutoGenerateColumns = false,
                 BackgroundColor = Color.White,
                 ForeColor = textColor,
                 BorderStyle = BorderStyle.Fixed3D,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
                 {
                     BackColor = secondaryColor,
@@ -2161,17 +2290,18 @@ namespace WinForms.pressentation
                 }
             };
 
+            // Configure columns
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "ID", DataPropertyName = "Id", ReadOnly = true, Width = 50 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Name", DataPropertyName = "Name", Width = 200 });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 300 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Description", DataPropertyName = "Description", Width = 250 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Price", DataPropertyName = "Price", Width = 100 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Stock", DataPropertyName = "StockQuantity", Width = 80 });
+            dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Category ID", DataPropertyName = "CategoryId", Width = 100 });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Image Path", DataPropertyName = "ImagePath", Width = 150 });
 
             try
             {
-                var products = _productService.GetAllProduct();
-                dgv.DataSource = new BindingSource { DataSource = products };
+                LoadProductsToGrid(dgv);
             }
             catch (Exception ex)
             {
@@ -2180,29 +2310,62 @@ namespace WinForms.pressentation
 
             viewAdmin.Controls.Add(dgv);
 
+            // Control buttons
             int buttonX = dgv.Right + 20;
-            var btnSave = CreateAdminButton("Save Changes", buttonX, 60);
-            var btnAdd = CreateAdminButton("Add New Product", buttonX, 110);
-            var btnDelete = CreateAdminButton("Delete Selected", buttonX, 160);
-            var btnRefresh = CreateAdminButton("Refresh", buttonX, 210);
-            var btnBack = CreateAdminButton("Back to Admin", buttonX, 260);
+            var btnSave = CreateAdminButton("Save Changes", buttonX, 130);
+            var btnAdd = CreateAdminButton("Add New Product", buttonX, 180);
+            var btnEdit = CreateAdminButton("Edit Selected", buttonX, 230);
+            var btnDelete = CreateAdminButton("Delete Selected", buttonX, 280);
+            var btnRefresh = CreateAdminButton("Refresh", buttonX, 330);
+            var btnBack = CreateAdminButton("Back to Admin", buttonX, 380);
 
-            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnDelete, btnRefresh, btnBack });
+            viewAdmin.Controls.AddRange(new Control[] { btnSave, btnAdd, btnEdit, btnDelete, btnRefresh, btnBack });
 
+            // Event handlers
             btnBack.Click += (s, e) => BuildAdminView();
 
             btnRefresh.Click += (s, e) =>
             {
                 try
                 {
-                    var products = _productService.GetAllProduct();
-                    dgv.DataSource = new BindingSource { DataSource = products };
+                    LoadProductsToGrid(dgv);
+                    adminSearchTextBox.Text = "";
                     ShowNotification("Products refreshed.", true);
                 }
                 catch (Exception ex)
                 {
                     ShowNotification($"Error refreshing products: {ex.Message}", false);
                 }
+            };
+
+            // Search functionality
+            searchButton.Click += (s, e) => {
+                SearchProducts(dgv, adminSearchTextBox.Text.Trim());
+            };
+
+            clearSearchButton.Click += (s, e) => {
+                adminSearchTextBox.Text = "";
+                LoadProductsToGrid(dgv);
+            };
+
+            // Real-time search
+            adminSearchTextBox.TextChanged += (s, e) => {
+                var timer = adminSearchTextBox.Tag as System.Windows.Forms.Timer;
+                if (timer != null)
+                {
+                    timer.Stop();
+                    timer.Dispose();
+                }
+
+                timer = new System.Windows.Forms.Timer();
+                timer.Interval = 500;
+                timer.Tick += (sender, args) => {
+                    timer.Stop();
+                    timer.Dispose();
+                    SearchProducts(dgv, adminSearchTextBox.Text.Trim());
+                };
+                timer.Start();
+                adminSearchTextBox.Tag = timer;
             };
 
             btnSave.Click += (s, e) =>
@@ -2225,27 +2388,17 @@ namespace WinForms.pressentation
                 }
             };
 
-            btnAdd.Click += (s, e) =>
+            btnAdd.Click += (s, e) => ShowAddProductDialog();
+
+            btnEdit.Click += (s, e) =>
             {
-                try
+                if (dgv.CurrentRow?.DataBoundItem is Product selectedProduct)
                 {
-                    var newP = new Product
-                    {
-                        Name = "New Product",
-                        Description = "Enter description here",
-                        Price = 0m,
-                        StockQuantity = 0,
-                        CreatedAt = DateTime.Now,
-                        ImagePath = ""
-                    };
-                    _productService.AddProduct(newP);
-                    _productService.saveProduct();
-                    dgv.DataSource = new BindingSource { DataSource = _productService.GetAllProduct() };
-                    ShowNotification("New product added successfully.", true);
+                    ShowEditProductDialog(selectedProduct);
                 }
-                catch (Exception ex)
+                else
                 {
-                    ShowNotification($"Error adding product: {ex.Message}", false);
+                    ShowNotification("Please select a product to edit.", false);
                 }
             };
 
@@ -2253,13 +2406,19 @@ namespace WinForms.pressentation
             {
                 if (dgv.CurrentRow?.DataBoundItem is Product p)
                 {
-                    if (MessageBox.Show($"Are you sure you want to delete '{p.Name}'?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (MessageBox.Show($"Are you sure you want to delete '{p.Name}'?\nThis action cannot be undone.", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
                         try
                         {
+                            // Delete associated image file if exists
+                            if (!string.IsNullOrEmpty(p.ImagePath))
+                            {
+                                DeleteProductImage(p.ImagePath);
+                            }
+
                             _productService.DeleteProduct(p);
                             _productService.saveProduct();
-                            dgv.DataSource = new BindingSource { DataSource = _productService.GetAllProduct() };
+                            LoadProductsToGrid(dgv);
                             ShowNotification("Product deleted successfully.", true);
                         }
                         catch (Exception ex)
@@ -2274,6 +2433,520 @@ namespace WinForms.pressentation
                 }
             };
         }
+
+        private void LoadProductsToGrid(DataGridView dgv)
+        {
+            var products = _productService.GetAllProduct().ToList();
+            dgv.DataSource = new BindingSource { DataSource = products };
+        }
+
+        private void SearchProducts(DataGridView dgv, string searchTerm)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(searchTerm))
+                {
+                    LoadProductsToGrid(dgv);
+                    return;
+                }
+
+                var products = _productService.GetAllProduct()
+                    .Where(p => p.Name.ToLower().Contains(searchTerm.ToLower()) ||
+                               (p.Description != null && p.Description.ToLower().Contains(searchTerm.ToLower())))
+                    .ToList();
+
+                dgv.DataSource = new BindingSource { DataSource = products };
+
+                if (!products.Any())
+                {
+                    ShowNotification($"No products found matching '{searchTerm}'", false);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Error searching products: {ex.Message}", false);
+            }
+        }
+
+        private void ShowAddProductDialog()
+        {
+            var addForm = CreateProductDialog("Add New Product", null);
+            if (addForm.ShowDialog() == DialogResult.OK)
+            {
+                // Refresh the grid
+                var dgv = viewAdmin.Controls.OfType<DataGridView>().FirstOrDefault(d => d.Name == "dgvProducts");
+                if (dgv != null)
+                {
+                    LoadProductsToGrid(dgv);
+                }
+            }
+        }
+
+        private void ShowEditProductDialog(Product product)
+        {
+            var editForm = CreateProductDialog("Edit Product", product);
+            if (editForm.ShowDialog() == DialogResult.OK)
+            {
+                // Refresh the grid
+                var dgv = viewAdmin.Controls.OfType<DataGridView>().FirstOrDefault(d => d.Name == "dgvProducts");
+                if (dgv != null)
+                {
+                    LoadProductsToGrid(dgv);
+                }
+            }
+        }
+
+        private Form CreateProductDialog(string title, Product existingProduct = null)
+        {
+            bool isEdit = existingProduct != null;
+
+            var form = new Form
+            {
+                Text = title,
+                Width = 600,
+                Height = 700,
+                StartPosition = FormStartPosition.CenterParent,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                BackColor = backgroundColor
+            };
+
+            // Main panel
+            var mainPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(25),
+                BackColor = backgroundColor,
+                AutoScroll = true
+            };
+            form.Controls.Add(mainPanel);
+
+            int yPos = 25;
+
+            // Product Name
+            var nameLabel = new Label
+            {
+                Text = "Product Name:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(nameLabel);
+
+            var nameTextBox = new TextBox
+            {
+                Name = "txtName",
+                Location = new Point(160, yPos - 2),
+                Width = 350,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle,
+                Text = existingProduct?.Name ?? ""
+            };
+            mainPanel.Controls.Add(nameTextBox);
+
+            yPos += 50;
+
+            // Description
+            var descLabel = new Label
+            {
+                Text = "Description:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(descLabel);
+
+            var descTextBox = new TextBox
+            {
+                Name = "txtDescription",
+                Location = new Point(160, yPos - 2),
+                Width = 350,
+                Height = 80,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle,
+                Multiline = true,
+                ScrollBars = ScrollBars.Vertical,
+                Text = existingProduct?.Description ?? ""
+            };
+            mainPanel.Controls.Add(descTextBox);
+
+            yPos += 100;
+
+            // Price
+            var priceLabel = new Label
+            {
+                Text = "Price (EGP):",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(priceLabel);
+
+            var priceNumeric = new NumericUpDown
+            {
+                Name = "numPrice",
+                Location = new Point(160, yPos - 2),
+                Width = 150,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                DecimalPlaces = 2,
+                Minimum = 0,
+                Maximum = 999999,
+                Value = existingProduct?.Price ?? 0
+            };
+            mainPanel.Controls.Add(priceNumeric);
+
+            yPos += 50;
+
+            // Stock Quantity
+            var stockLabel = new Label
+            {
+                Text = "Stock Quantity:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(stockLabel);
+
+            var stockNumeric = new NumericUpDown
+            {
+                Name = "numStock",
+                Location = new Point(160, yPos - 2),
+                Width = 150,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                Minimum = 0,
+                Maximum = 99999,
+                Value = existingProduct?.StockQuantity ?? 0
+            };
+            mainPanel.Controls.Add(stockNumeric);
+
+            yPos += 50;
+
+            // Category
+            var categoryLabel = new Label
+            {
+                Text = "Category:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(categoryLabel);
+
+            var categoryCombo = new ComboBox
+            {
+                Name = "cmbCategory",
+                Location = new Point(160, yPos - 2),
+                Width = 200,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+
+            // Load categories
+            try
+            {
+                var categories = _categoryService.GetAllCategory();
+                categoryCombo.DataSource = categories;
+                categoryCombo.DisplayMember = "Name";
+                categoryCombo.ValueMember = "Id";
+
+                if (existingProduct?.CategoryId != null)
+                {
+                    categoryCombo.SelectedValue = existingProduct.CategoryId;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Error loading categories: {ex.Message}", false);
+            }
+
+            mainPanel.Controls.Add(categoryCombo);
+
+            yPos += 50;
+
+            // Product Image
+            var imageLabel = new Label
+            {
+                Text = "Product Image:",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Location = new Point(25, yPos),
+                Size = new Size(120, 23),
+                ForeColor = primaryColor
+            };
+            mainPanel.Controls.Add(imageLabel);
+
+            var imagePathTextBox = new TextBox
+            {
+                Name = "txtImagePath",
+                Location = new Point(160, yPos - 2),
+                Width = 250,
+                Height = 30,
+                Font = new Font("Segoe UI", 11),
+                BackColor = Color.White,
+                ForeColor = textColor,
+                BorderStyle = BorderStyle.FixedSingle,
+                ReadOnly = true,
+                Text = existingProduct?.ImagePath ?? ""
+            };
+            mainPanel.Controls.Add(imagePathTextBox);
+
+            var browseButton = CreateStyledButton("Browse", new Point(420, yPos - 2), 90, 30);
+            mainPanel.Controls.Add(browseButton);
+
+            yPos += 50;
+
+            // Image Preview
+            var imagePreview = new PictureBox
+            {
+                Name = "pbPreview",
+                Location = new Point(160, yPos),
+                Size = new Size(200, 150),
+                BorderStyle = BorderStyle.FixedSingle,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                BackColor = Color.White
+            };
+
+            // Load existing image if editing
+            if (isEdit && !string.IsNullOrEmpty(existingProduct.ImagePath))
+            {
+                LoadImagePreview(imagePreview, existingProduct.ImagePath);
+            }
+            else
+            {
+                imagePreview.Image = GeneratePlaceholderImage("No Image", 200, 150);
+            }
+
+            mainPanel.Controls.Add(imagePreview);
+
+            yPos += 170;
+
+            // Browse button functionality
+            browseButton.Click += (s, e) =>
+            {
+                using (var openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files|*.*";
+                    openFileDialog.Title = "Select Product Image";
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            // Load and display preview
+                            using (var img = Image.FromFile(openFileDialog.FileName))
+                            {
+                                imagePreview.Image = new Bitmap(img);
+                            }
+
+                            // Store the full path temporarily
+                            imagePathTextBox.Tag = openFileDialog.FileName;
+                            imagePathTextBox.Text = Path.GetFileName(openFileDialog.FileName);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowNotification($"Error loading image: {ex.Message}", false);
+                        }
+                    }
+                }
+            };
+
+            // Action buttons
+            var saveButton = CreateStyledButton(isEdit ? "Update Product" : "Add Product", new Point(160, yPos), 150, 40);
+            var cancelButton = CreateStyledButton("Cancel", new Point(320, yPos), 120, 40);
+
+            mainPanel.Controls.Add(saveButton);
+            mainPanel.Controls.Add(cancelButton);
+
+            cancelButton.Click += (s, e) => form.DialogResult = DialogResult.Cancel;
+
+            saveButton.Click += (s, e) =>
+            {
+                try
+                {
+                    // Validate inputs
+                    if (string.IsNullOrWhiteSpace(nameTextBox.Text))
+                    {
+                        ShowNotification("Product name is required.", false);
+                        nameTextBox.Focus();
+                        return;
+                    }
+
+                    if (categoryCombo.SelectedValue == null)
+                    {
+                        ShowNotification("Please select a category.", false);
+                        categoryCombo.Focus();
+                        return;
+                    }
+
+                    string savedImagePath = "";
+
+                    // Handle image saving
+                    if (imagePathTextBox.Tag != null) // New image selected
+                    {
+                        string sourcePath = imagePathTextBox.Tag.ToString();
+                        savedImagePath = SaveProductImage(sourcePath);
+                        if (string.IsNullOrEmpty(savedImagePath))
+                        {
+                            ShowNotification("Error saving product image.", false);
+                            return;
+                        }
+                    }
+                    else if (isEdit && !string.IsNullOrEmpty(imagePathTextBox.Text))
+                    {
+                        // Keep existing image path for edit
+                        savedImagePath = existingProduct.ImagePath;
+                    }
+
+                    if (isEdit)
+                    {
+                        // Update existing product
+                        existingProduct.Name = nameTextBox.Text.Trim();
+                        existingProduct.Description = descTextBox.Text.Trim();
+                        existingProduct.Price = priceNumeric.Value;
+                        existingProduct.StockQuantity = (int)stockNumeric.Value;
+                        existingProduct.CategoryId = (int)categoryCombo.SelectedValue;
+
+                        // Only update image path if a new image was selected
+                        if (!string.IsNullOrEmpty(savedImagePath))
+                        {
+                            // Delete old image if different
+                            if (!string.IsNullOrEmpty(existingProduct.ImagePath) &&
+                                existingProduct.ImagePath != savedImagePath)
+                            {
+                                DeleteProductImage(existingProduct.ImagePath);
+                            }
+                            existingProduct.ImagePath = savedImagePath;
+                        }
+
+                        _productService.UpdateProduct(existingProduct);
+                        _productService.saveProduct();
+                        ShowNotification("Product updated successfully.", true);
+                    }
+                    else
+                    {
+                        // Create new product
+                        var newProduct = new Product
+                        {
+                            Name = nameTextBox.Text.Trim(),
+                            Description = descTextBox.Text.Trim(),
+                            Price = priceNumeric.Value,
+                            StockQuantity = (int)stockNumeric.Value,
+                            CategoryId = (int)categoryCombo.SelectedValue,
+                            ImagePath = savedImagePath,
+                            CreatedAt = DateTime.Now
+                        };
+
+                        _productService.AddProduct(newProduct);
+                        _productService.saveProduct();
+                        ShowNotification("Product added successfully.", true);
+                    }
+
+                    form.DialogResult = DialogResult.OK;
+                }
+                catch (Exception ex)
+                {
+                    ShowNotification($"Error saving product: {ex.Message}", false);
+                }
+            };
+
+            return form;
+        }
+
+        private string SaveProductImage(string sourcePath)
+        {
+            try
+            {
+                // Create Resources folder if it doesn't exist
+                //string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
+                string projectRoot = Directory.GetCurrentDirectory();
+                string resourcesPath = Path.Combine(projectRoot, "Resources");
+
+                if (!Directory.Exists(resourcesPath))
+                {
+                    Directory.CreateDirectory(resourcesPath);
+                }
+
+                // Generate unique filename
+                string fileName = $"product_{DateTime.Now:yyyyMMdd_HHmmss}_{Guid.NewGuid():N}.{Path.GetExtension(sourcePath).TrimStart('.')}";
+                string destinationPath = Path.Combine(resourcesPath, fileName);
+
+                // Copy file to Resources folder
+                File.Copy(sourcePath, destinationPath, true);
+
+                return fileName; // Return just the filename, not the full path
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Error saving image: {ex.Message}", false);
+                return "";
+            }
+        }
+
+        private void LoadImagePreview(PictureBox pictureBox, string imagePath)
+        {
+            try
+            {
+                string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
+                string fullPath = Path.Combine(projectRoot, "Resources", imagePath);
+
+                if (File.Exists(fullPath))
+                {
+                    using (var img = Image.FromFile(fullPath))
+                    {
+                        pictureBox.Image = new Bitmap(img);
+                    }
+                }
+                else
+                {
+                    pictureBox.Image = GeneratePlaceholderImage("Image Not Found", pictureBox.Width, pictureBox.Height);
+                }
+            }
+            catch (Exception)
+            {
+                pictureBox.Image = GeneratePlaceholderImage("Error Loading", pictureBox.Width, pictureBox.Height);
+            }
+        }
+
+        private void DeleteProductImage(string imagePath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(imagePath)) return;
+
+                string projectRoot = Path.GetDirectoryName(Path.GetDirectoryName(Path.GetDirectoryName(Application.StartupPath)));
+                string fullPath = Path.Combine(projectRoot, "Resources", imagePath);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't show notification as this is cleanup
+                System.Diagnostics.Debug.WriteLine($"Error deleting image: {ex.Message}");
+            }
+        }
+
+        #endregion
 
         private Button CreateAdminButton(string text, int x, int y)
         {
@@ -2427,6 +3100,128 @@ namespace WinForms.pressentation
             };
         }
 
+        //private void BuildAdminOrdersView()
+        //{
+        //    viewAdmin.Controls.Clear();
+        //    var title = new Label
+        //    {
+        //        Text = "All Orders Management",
+        //        Font = new Font("Segoe UI", 16, FontStyle.Bold),
+        //        Location = new Point(20, 20),
+        //        AutoSize = true,
+        //        ForeColor = primaryColor
+        //    };
+        //    viewAdmin.Controls.Add(title);
+
+        //    var pnl = new Panel
+        //    {
+        //        Location = new Point(20, 60),
+        //        Size = new Size(Math.Max(1000, this.Width - 80), Math.Max(600, this.Height - 150)),
+        //        AutoScroll = true,
+        //        BorderStyle = BorderStyle.Fixed3D,
+        //        BackColor = Color.White
+        //    };
+        //    viewAdmin.Controls.Add(pnl);
+
+        //    var btnBack = CreateAdminButton("Back to Admin", 20, pnl.Bottom + 10);
+        //    btnBack.Click += (s, e) => BuildAdminView();
+        //    viewAdmin.Controls.Add(btnBack);
+
+        //    try
+        //    {
+        //        var orders = _orderService.GetAllOrders()
+        //            .OrderByDescending(o => o.OrderDate)
+        //            .ToList();
+
+        //        if (orders.Count == 0)
+        //        {
+        //            pnl.Controls.Add(new Label
+        //            {
+        //                Text = "No orders found in the system.",
+        //                Location = new Point(15, 15),
+        //                AutoSize = true,
+        //                Font = new Font("Segoe UI", 12),
+        //                ForeColor = textColor
+        //            });
+        //            return;
+        //        }
+
+        //        int y = 15;
+        //        foreach (var o in orders)
+        //        {
+        //            var orderPanel = CreateBorderedPanel(secondaryColor, 2);
+        //            orderPanel.Location = new Point(15, y);
+        //            orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(140, 100 + (o.ProductOrder.Count * 25)));
+        //            orderPanel.BackColor = lightColor;
+        //            orderPanel.Padding = new Padding(15);
+        //            pnl.Controls.Add(orderPanel);
+
+        //            var headerLbl = new Label
+        //            {
+        //                Text = $"Order #{o.Id} - Customer: {o.User?.Email ?? "Unknown"}",
+        //                Location = new Point(15, 15),
+        //                Size = new Size(orderPanel.Width - 30, 25),
+        //                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+        //                ForeColor = primaryColor
+        //            };
+        //            orderPanel.Controls.Add(headerLbl);
+
+        //            var dateLbl = new Label
+        //            {
+        //                Text = $"Date: {o.OrderDate:dddd, MMMM dd, yyyy 'at' h:mm tt}",
+        //                Location = new Point(15, 45),
+        //                AutoSize = true,
+        //                Font = new Font("Segoe UI", 10),
+        //                ForeColor = textColor
+        //            };
+        //            orderPanel.Controls.Add(dateLbl);
+
+        //            var totalLbl = new Label
+        //            {
+        //                Text = $"Total: {o.OrderTotalPrice:N2} EGP",
+        //                Location = new Point(15, 70),
+        //                AutoSize = true,
+        //                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+        //                ForeColor = secondaryColor
+        //            };
+        //            orderPanel.Controls.Add(totalLbl);
+
+        //            // Items header
+        //            var itemsHeader = new Label
+        //            {
+        //                Text = "Order Items:",
+        //                Location = new Point(15, 100),
+        //                AutoSize = true,
+        //                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+        //                ForeColor = primaryColor
+        //            };
+        //            orderPanel.Controls.Add(itemsHeader);
+
+        //            // List items
+        //            int itemY = 125;
+        //            foreach (var po in o.ProductOrder)
+        //            {
+        //                var lblItem = new Label
+        //                {
+        //                    Text = $"• {po.Product?.Name ?? "Unknown Product"} × {po.Quantity} = {((po.Product?.Price ?? 0) * po.Quantity):N2} EGP",
+        //                    Location = new Point(30, itemY),
+        //                    Size = new Size(orderPanel.Width - 60, 22),
+        //                    Font = new Font("Segoe UI", 9),
+        //                    ForeColor = textColor
+        //                };
+        //                orderPanel.Controls.Add(lblItem);
+        //                itemY += 25;
+        //            }
+
+        //            y += orderPanel.Height + 15;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ShowNotification($"Error loading orders: {ex.Message}", false);
+        //    }
+        //}
+
         private void BuildAdminOrdersView()
         {
             viewAdmin.Controls.Clear();
@@ -2478,7 +3273,7 @@ namespace WinForms.pressentation
                 {
                     var orderPanel = CreateBorderedPanel(secondaryColor, 2);
                     orderPanel.Location = new Point(15, y);
-                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(140, 100 + (o.ProductOrder.Count * 25)));
+                    orderPanel.Size = new Size(Math.Min(950, pnl.Width - 50), Math.Max(180, 140 + (o.ProductOrder.Count * 25)));
                     orderPanel.BackColor = lightColor;
                     orderPanel.Padding = new Padding(15);
                     pnl.Controls.Add(orderPanel);
@@ -2513,11 +3308,63 @@ namespace WinForms.pressentation
                     };
                     orderPanel.Controls.Add(totalLbl);
 
+                    // Order Status Management
+                    var statusLbl = new Label
+                    {
+                        Text = "Status:",
+                        Location = new Point(15, 100),
+                        AutoSize = true,
+                        Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                        ForeColor = primaryColor
+                    };
+                    orderPanel.Controls.Add(statusLbl);
+
+                    var statusCombo = new ComboBox
+                    {
+                        Location = new Point(70, 97),
+                        Width = 120,
+                        Height = 25,
+                        Font = new Font("Segoe UI", 10),
+                        BackColor = Color.White,
+                        ForeColor = textColor,
+                        DropDownStyle = ComboBoxStyle.DropDownList
+                    };
+
+                    // Add OrderStatus enum values to combo box
+                    foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                    {
+                        statusCombo.Items.Add(status);
+                    }
+
+                    statusCombo.SelectedItem = o.Status;
+                    orderPanel.Controls.Add(statusCombo);
+
+                    var updateStatusBtn = CreateStyledButton("Update", new Point(200, 95), 80, 30);
+                    updateStatusBtn.Click += (s, e) =>
+                    {
+                        try
+                        {
+                            if (statusCombo.SelectedItem is OrderStatus newStatus)
+                            {
+                                _orderService.UpdateOrderStatus(o.Id, newStatus);
+                                ShowNotification($"Order #{o.Id} status updated to {newStatus}.", true);
+
+                                // Refresh the view
+                                BuildAdminOrdersView();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowNotification($"Error updating order status: {ex.Message}", false);
+                        }
+                    };
+                    orderPanel.Controls.Add(updateStatusBtn);
+
                     // Items header
                     var itemsHeader = new Label
                     {
                         Text = "Order Items:",
-                        Location = new Point(15, 100),
+                        Location = new Point(15, 135),
                         AutoSize = true,
                         Font = new Font("Segoe UI", 10, FontStyle.Bold),
                         ForeColor = primaryColor
@@ -2525,7 +3372,7 @@ namespace WinForms.pressentation
                     orderPanel.Controls.Add(itemsHeader);
 
                     // List items
-                    int itemY = 125;
+                    int itemY = 160;
                     foreach (var po in o.ProductOrder)
                     {
                         var lblItem = new Label
@@ -2548,7 +3395,6 @@ namespace WinForms.pressentation
                 ShowNotification($"Error loading orders: {ex.Message}", false);
             }
         }
-
         #endregion
 
         #region Dispose Resources on close

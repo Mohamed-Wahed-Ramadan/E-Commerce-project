@@ -15,11 +15,13 @@ namespace E_Commerce.application.Services
     {
         private readonly IGenaricRepository<Order, int> _orderRepository;
         private readonly IProductRepository _productRepository;
+        private readonly ICartRepository _cartRepository;
 
-        public OrderService(IGenaricRepository<Order, int> orderRepository, IProductRepository productRepository)
+        public OrderService(IGenaricRepository<Order, int> orderRepository, IProductRepository productRepository, ICartRepository cartRepository)
         {
             this._orderRepository = orderRepository;
             this._productRepository = productRepository;
+            this._cartRepository = cartRepository;
         }
 
         public Order? CreateOrder(Cart cart)
@@ -36,33 +38,62 @@ namespace E_Commerce.application.Services
             {
                 UserId = cart.UserId,
                 OrderDate = DateTime.Now,
+                Status = OrderStatus.Pending, // Add default status
+                ProductOrder = new List<ProductOrder>() // Initialize collection
             };
             var totalPrice = 0m;
             foreach (var item in cart.CartProducts)
             {
                 var product = _productRepository.GetById(item.ProductId);
+
+                // Add proper stock validation
+                if (product == null)
+                {
+                    throw new InvalidOperationException($"Product with ID {item.ProductId} not found.");
+                }
+
                 if (product.StockQuantity < item.Quantity)
                 {
-                    item.Quantity = product.StockQuantity;
+                    // Instead of silently reducing quantity, throw exception or return error
+                    throw new InvalidOperationException($"Insufficient stock for {product.Name}. Available: {product.StockQuantity}, Requested: {item.Quantity}");
                 }
+
+                // Update stock
                 product.StockQuantity -= item.Quantity;
-                item.Price = product.Price;
                 _productRepository.Update(product);
-                totalPrice += item.Price * item.Quantity;
+
+                // Calculate price
+                var itemPrice = product.Price; // Use product price, not cart item price
+                totalPrice += itemPrice * item.Quantity;
 
                 order.ProductOrder.Add(new ProductOrder
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    Price = item.Price,
+                    Price = itemPrice, // Use calculated price
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                 });
             }
             order.OrderTotalPrice = totalPrice;
             _orderRepository.Add(order);
+            _cartRepository.DeleteCart(cart);
             Save();
             return order;
+        }
+        private bool ValidateCartStock(Cart cart)
+        {
+            if (cart?.CartProducts == null) return false;
+
+            foreach (var cartItem in cart.CartProducts)
+            {
+                var product = _productRepository.GetById(cartItem.ProductId);
+                if (product == null || product.StockQuantity < cartItem.Quantity)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void DeletOrder(Order order)
@@ -86,6 +117,17 @@ namespace E_Commerce.application.Services
         public void Save()
         {
             _orderRepository.Complete();
+        }
+
+        public void UpdateOrderStatus(int OrderId, OrderStatus status)
+        {
+            var order = _orderRepository.GetById(OrderId);
+            if (order != null)
+            {
+                order.Status = status;
+                _orderRepository.Update(order);
+                Save();
+            }
         }
     }
 }

@@ -19,27 +19,24 @@ namespace E_Commerce.Context.Configuration
                    .HasForeignKey(p => p.CategoryId);
 
             builder.HasData(
-                    // Electronics
-                    new Product { Id = 1, Name = "Laptop", Description = "High performance laptop", Price = 15000, CategoryId = 1, StockQuantity = 20 },
-                    new Product { Id = 2, Name = "Smartphone", Description = "Latest smartphone", Price = 8000, CategoryId = 1, StockQuantity = 50 },
-                    new Product { Id = 3, Name = "Headphones", Description = "Wireless headphones", Price = 1200, CategoryId = 1, StockQuantity = 70 },
+                     // Antiquities
+                     new Product { Id = 1, Name = "Tutankhamun's Mask", Description = "A replica of the famous golden mask of Tutankhamun.", Price = 5000, CategoryId = 1, StockQuantity = 10, ImagePath = "images/a1.png" },
+                     new Product { Id = 2, Name = "Pharaonic Statue", Description = "A statue of a high-ranking official from ancient Egypt.", Price = 3500, CategoryId = 1, StockQuantity = 15, ImagePath = "images/a2.png" },
+                     new Product { Id = 3, Name = "Horus Falcon Statue", Description = "A statue of the falcon god Horus.", Price = 4500, CategoryId = 1, StockQuantity = 12, ImagePath = "images/a3.png" },
+                     new Product { Id = 4, Name = "Winged Lion Statue", Description = "A statue of a winged lion from ancient mythology.", Price = 4200, CategoryId = 1, StockQuantity = 8, ImagePath = "images/a4.png" },
+                     new Product { Id = 5, Name = "Ankh (Key of Life)", Description = "An ankh, the ancient Egyptian hieroglyphic symbol for life.", Price = 2000, CategoryId = 1, StockQuantity = 20, ImagePath = "images/a5.png" },
+                     new Product { Id = 6, Name = "Queen Nefertiti Bust", Description = "A bust of the Great Royal Wife of Pharaoh Akhenaten.", Price = 5500, CategoryId = 1, StockQuantity = 7, ImagePath = "images/a6.png" },
+                     new Product { Id = 7, Name = "Sphinx Statue", Description = "A replica of the iconic Great Sphinx of Giza.", Price = 4800, CategoryId = 1, StockQuantity = 10, ImagePath = "images/a7.png" },
 
-                    // Clothes
-                    new Product { Id = 4, Name = "T-Shirt", Description = "Cotton T-shirt", Price = 250, CategoryId = 2, StockQuantity = 100 },
-                    new Product { Id = 5, Name = "Jeans", Description = "Blue denim jeans", Price = 500, CategoryId = 2, StockQuantity = 60 },
+                     // Metals
+                     new Product { Id = 8, Name = "Gold Bars", Description = "Pure gold bullion bars.", Price = 100000, CategoryId = 3, StockQuantity = 5, ImagePath = "images/b1.png" },
+                     new Product { Id = 9, Name = "Small Gold Bars", Description = "Small pure gold bars.", Price = 50000, CategoryId = 3, StockQuantity = 8, ImagePath = "images/b2.png" },
 
-                    // Books
-                    new Product { Id = 6, Name = "Novel", Description = "Bestselling novel", Price = 120, CategoryId = 3, StockQuantity = 40 },
-                    new Product { Id = 7, Name = "Programming Book", Description = "Learn C# from scratch", Price = 300, CategoryId = 3, StockQuantity = 30 },
-
-                    // Home Appliances
-                    new Product { Id = 8, Name = "Microwave", Description = "800W microwave oven", Price = 2500, CategoryId = 4, StockQuantity = 15 },
-                    new Product { Id = 9, Name = "Vacuum Cleaner", Description = "Bagless vacuum cleaner", Price = 1800, CategoryId = 4, StockQuantity = 25 },
-
-                    // Sports
-                    new Product { Id = 10, Name = "Football", Description = "Official size football", Price = 400, CategoryId = 5, StockQuantity = 80 },
-                    new Product { Id = 11, Name = "Tennis Racket", Description = "Professional tennis racket", Price = 950, CategoryId = 5, StockQuantity = 20 }
-                );
-        }
+                     // Jewelry
+                     new Product { Id = 10, Name = "Red Ruby Gem", Description = "A natural, uncut red ruby.", Price = 25000, CategoryId = 2, StockQuantity = 3, ImagePath = "images/c1.png" },
+                     new Product { Id = 11, Name = "Raw Diamond Gem", Description = "A natural, uncut raw diamond.", Price = 120000, CategoryId = 2, StockQuantity = 2, ImagePath = "images/c2.png" }
+                 );
+        
+    }
     }
 }

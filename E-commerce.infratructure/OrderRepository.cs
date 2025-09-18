@@ -14,7 +14,6 @@ namespace E_commerce.infratructure
         AppDbContext _context;
         public OrderRepository(AppDbContext context) : base(context)
         {
-            
             _context = context;
         }
 
